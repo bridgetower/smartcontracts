@@ -1,0 +1,7 @@
+gasReporterOutput.json
+
+node_modules/
+artifacts/
+cache/
+
+coverage*

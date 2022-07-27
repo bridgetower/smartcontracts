@@ -1,0 +1,15 @@
+.openzeppelin/
+node_modules/
+artifacts/
+typechain/
+coverage/
+cache/
+build/
+
+package-lock.json
+yarn-error.log
+coverage.json
+yarn.lock
+
+.DS_Store
+.env
