@@ -1,7 +1,7 @@
 {
   "name": "bridge-tower-marketplace",
   "version": "0.0.1",
-  "description": "A marketplace for NFTs related to Bridge Tower project",
+  "description": "A marketplace for NFTs related to the Bridge Tower project",
   "scripts": {
     "compile": "npx hardhat clean && npx hardhat compile",
     "migrate": "npx hardhat run --network avalanche scripts/deploy.ts",

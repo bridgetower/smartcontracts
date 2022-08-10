@@ -178,8 +178,9 @@ async function main() {
   /**
    * ExchangeV2Proxy
    */
-  const protocolFee: BigNumber = BigNumber.from(300);
-  const defaultFeeReceiver: string = signers[0].address;
+  const protocolFee: BigNumber = BigNumber.from(process.env.PROTOCOL_FEE);
+  const defaultFeeReceiver: string =
+    process.env.DEFAULT_FEE_RECEIVER || signers[0].address;
   const ExchangeV2: ContractFactory = await ethers.getContractFactory(
     "ExchangeV2"
   );
@@ -220,8 +221,8 @@ async function main() {
   const erc1155BridgeTowerProxy: Contract = await upgrades.deployProxy(
     ERC1155BridgeTower,
     [
-      "BridgeTower Permissioned Market Token",
-      "PMT",
+      process.env.TOKEN_NAME,
+      process.env.TOKEN_SYMBOL,
       "",
       "",
       transferProxy.address,

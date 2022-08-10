@@ -7,11 +7,9 @@ import hre from "hardhat";
 dotenv.config();
 
 async function main() {
-  const transferProxy: string = "0x6444155C7F4885726E422267009CB609D2eE6BC9"; // CHANGE address
-  const lazyTransferProxy: string =
-    "0x4CE25528f8b80c0ce59CE4Ef431027812e54D4e1"; // CHANGE address
-  const erc721BridgeTowerProxy: string =
-    "0xa6Fdc272320235efa77BE5BB0522E059EbcD0e73"; // CHANGE address
+  const transferProxy: string = ""; // CHANGE address
+  const lazyTransferProxy: string = ""; // CHANGE address
+  const erc721BridgeTowerProxy: string = ""; // CHANGE address
 
   // Verify TransferProxy
   try {
@@ -34,8 +32,8 @@ async function main() {
   }
 
   // Verify ERC721BridgeTowerProxy
-  const name: string = "BridgeTower Permissioned Market Token";
-  const symbol: string = "PMT";
+  const name: string = process.env.TOKEN_NAME || "";
+  const symbol: string = process.env.TOKEN_SYMBOL || "";
   const baseURI: string = "";
   const contractURI: string = "";
 

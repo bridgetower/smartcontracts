@@ -52,8 +52,8 @@ async function main() {
   const erc721BridgeTowerProxy: Contract = await upgrades.deployProxy(
     ERC721BridgeTower,
     [
-      "BridgeTower Permissioned Market Token",
-      "PMT",
+      process.env.TOKEN_NAME,
+      process.env.TOKEN_SYMBOL,
       "",
       "",
       transferProxy.address,

@@ -47,7 +47,7 @@ export async function mint(erc1155BridgeTowerProxyAddress: string) {
       royalties: [
         {
           account: signers[0].address,
-          value: BigNumber.from(1000),
+          value: BigNumber.from(process.env.ROYALTIES),
         },
       ],
       signatures: [constants.ZERO_ADDRESS],

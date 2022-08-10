@@ -106,8 +106,10 @@ async function main() {
   }
 
   // Verify ExchangeV2Proxy
-  const protocolFee: BigNumber = BigNumber.from(300);
-  const defaultFeeReceiver: string = (await hre.ethers.getSigners())[0].address;
+  const protocolFee: BigNumber = BigNumber.from(process.env.PROTOCOL_FEE);
+  const defaultFeeReceiver: string =
+    process.env.DEFAULT_FEE_RECEIVER ||
+    (await hre.ethers.getSigners())[0].address;
 
   try {
     await hre.run("verify:verify", {
@@ -139,8 +141,8 @@ async function main() {
   }
 
   // Verify ERC1155BridgeTowerProxy
-  const name: string = "BridgeTower Permissioned Market Token";
-  const symbol: string = "PMT";
+  const name: string = process.env.TOKEN_NAME || "";
+  const symbol: string = process.env.TOKEN_SYMBOL || "";
   const baseURI: string = "";
   const contractURI: string = "";
   const lockPeriod: BigNumber = BigNumber.from(0);

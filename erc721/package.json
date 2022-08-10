@@ -1,7 +1,7 @@
 {
   "name": "bridge-tower-eth-erc721-token",
   "version": "0.0.1",
-  "description": "An ETH ERC721 token related to Bridge Tower project",
+  "description": "An ETH ERC721 token related to the Bridge Tower project",
   "scripts": {
     "compile": "npx hardhat clean && npx hardhat compile",
     "migrate": "npx hardhat run --network mainnet scripts/deploy.ts",

@@ -8,6 +8,8 @@ import links from "./data/links.json";
 
 import { ethers } from "hardhat";
 
+import * as dotenv from "dotenv";
+
 import {
   ContractTransaction,
   ContractFactory,
@@ -16,6 +18,8 @@ import {
 } from "ethers";
 
 const { constants } = require("@openzeppelin/test-helpers");
+
+dotenv.config();
 
 export async function mint(erc721BridgeTowerProxyAddress: string) {
   const ERC721BridgeTower: ContractFactory = await ethers.getContractFactory(
@@ -40,7 +44,7 @@ export async function mint(erc721BridgeTowerProxyAddress: string) {
       royalties: [
         {
           account: signers[0].address,
-          value: BigNumber.from(1000),
+          value: BigNumber.from(process.env.ROYALTIES),
         },
       ],
       signatures: [constants.ZERO_ADDRESS],
