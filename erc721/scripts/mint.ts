@@ -21,12 +21,12 @@ const { constants } = require("@openzeppelin/test-helpers");
 
 dotenv.config();
 
-export async function mint(erc721BridgeTowerProxyAddress: string) {
+async function main() {
   const ERC721BridgeTower: ContractFactory = await ethers.getContractFactory(
     "ERC721BridgeTower"
   );
   const erc721BridgeTowerProxy: Contract = ERC721BridgeTower.attach(
-    erc721BridgeTowerProxyAddress
+    process.env.ERC721_BRIDGE_TOWER_PROXY || ""
   );
   const signers: SignerWithAddress[] = await ethers.getSigners();
 
@@ -58,3 +58,9 @@ export async function mint(erc721BridgeTowerProxyAddress: string) {
     console.log(`${i.toString()}. ${tokenId.toString()}`);
   }
 }
+
+main().catch((error) => {
+  console.error(error);
+
+  process.exitCode = 1;
+});

@@ -11,9 +11,6 @@ import {
   Contract,
 } from "ethers";
 
-// eslint-disable-next-line node/no-missing-import
-import { mint } from "./mint";
-
 dotenv.config();
 
 async function main() {
@@ -307,11 +304,6 @@ async function main() {
   tx = await contractsRegistry.addContract(exchangeV2Proxy.address);
 
   await tx.wait();
-
-  /**
-   * Mint
-   */
-  await mint(erc1155BridgeTowerProxy.address);
 }
 
 main().catch((error) => {

@@ -7,9 +7,10 @@ import hre from "hardhat";
 dotenv.config();
 
 async function main() {
-  const transferProxy: string = ""; // CHANGE address
-  const lazyTransferProxy: string = ""; // CHANGE address
-  const erc721BridgeTowerProxy: string = ""; // CHANGE address
+  const transferProxy: string = process.env.TRANSFER_PROXY || "";
+  const lazyTransferProxy: string = process.env.LAZY_TRANSFER_PROXY || "";
+  const erc721BridgeTowerProxy: string =
+    process.env.ERC721_BRIDGE_TOWER_PROXY || "";
 
   // Verify TransferProxy
   try {

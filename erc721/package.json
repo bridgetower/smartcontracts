@@ -1,12 +1,15 @@
 {
   "name": "bridge-tower-eth-erc721-token",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "An ETH ERC721 token related to the Bridge Tower project",
   "scripts": {
     "compile": "npx hardhat clean && npx hardhat compile",
     "migrate": "npx hardhat run --network mainnet scripts/deploy.ts",
     "migrate:testnet": "npx hardhat run --network goerli scripts/deploy.ts",
     "migrate:sandbox": "npx hardhat run --network localhost scripts/deploy.ts",
+    "mint": "npx hardhat run --network mainnet scripts/mint.ts",
+    "mint:testnet": "npx hardhat run --network goerli scripts/mint.ts",
+    "mint:sandbox": "npx hardhat run --network localhost scripts/mint.ts",
     "verify": "npx hardhat run scripts/verify/verify.ts --network mainnet",
     "verify:testnet": "npx hardhat run scripts/verify/verify.ts --network goerli",
     "start-sandbox": "npx hardhat node",

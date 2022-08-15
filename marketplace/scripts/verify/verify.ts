@@ -25,15 +25,18 @@ async function main() {
       break;
   }
 
-  const securitizeRegistryProxy: string = ""; // CHANGE address
-  const contractsRegistry: string = ""; // CHANGE address
-  const contractsRegistryProxy: string = ""; // CHANGE address
-  const transferProxy: string = ""; // CHANGE address
-  const erc20TransferProxy: string = ""; // CHANGE address
-  const lazyTransferProxy: string = ""; // CHANGE address
-  const royaltiesRegistry: string = ""; // CHANGE address
-  const exchangeV2Proxy: string = ""; // CHANGE address
-  const erc1155BridgeTowerProxy: string = ""; // CHANGE address
+  const securitizeRegistryProxy: string =
+    process.env.SECURITIZE_REGISTRY_PROXY || "";
+  const contractsRegistry: string = process.env.CONTRACTS_REGISTRY || "";
+  const contractsRegistryProxy: string =
+    process.env.CONTRACTS_REGISTRY_PROXY || "";
+  const transferProxy: string = process.env.TRANSFER_PROXY || "";
+  const erc20TransferProxy: string = process.env.ERC20_TRANSFER_PROXY || "";
+  const lazyTransferProxy: string = process.env.LAZY_TRANSFER_PROXY || "";
+  const royaltiesRegistry: string = process.env.ROYALTIES_REGISTRY || "";
+  const exchangeV2Proxy: string = process.env.EXCHANGE_V2_PROXY || "";
+  const erc1155BridgeTowerProxy: string =
+    process.env.ERC1155_BRIDGE_TOWER_PROXY || "";
 
   // Verify SecuritizeRegistryProxy
   try {

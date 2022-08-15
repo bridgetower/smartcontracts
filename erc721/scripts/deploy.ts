@@ -4,9 +4,6 @@ import { ethers, upgrades } from "hardhat";
 
 import * as dotenv from "dotenv";
 
-// eslint-disable-next-line node/no-missing-import
-import { mint } from "./mint";
-
 dotenv.config();
 
 async function main() {
@@ -65,8 +62,6 @@ async function main() {
   await erc721BridgeTowerProxy.deployed();
 
   console.log("ERC721BridgeTowerProxy: ", erc721BridgeTowerProxy.address, "\n");
-
-  await mint(erc721BridgeTowerProxy.address);
 }
 
 main().catch((error) => {
