@@ -6,7 +6,6 @@ pragma abicoder v2;
 
 import "../../securitize/WhitelistableUpgradeable.sol";
 
-import "../access/PartnerAccessControl.sol";
 import "../access/MinterAccessControl.sol";
 
 import "../IsPrivateCollection.sol";
@@ -17,7 +16,6 @@ contract ERC1155BridgeTower is
     ERC1155Base,
     IsPrivateCollection,
     MinterAccessControl,
-    PartnerAccessControl,
     WhitelistableUpgradeable
 {
     event CreateERC1155BridgeTower(address owner, string name, string symbol);
@@ -110,7 +108,6 @@ contract ERC1155BridgeTower is
         __ERC1155Base_init_unchained(_name, _symbol);
         __ERC1155Lockable_init_unchained(lockPeriod);
         __MinterAccessControl_init_unchained();
-        __PartnerAccessControl_init_unchained();
         __Whitelistable_init_unchained(
             securitizeRegistryProxy,
             contractsRegistryProxy
@@ -128,7 +125,7 @@ contract ERC1155BridgeTower is
         address from,
         address to,
         uint256 amount
-    ) external override onlyPartner(_msgSender()) {
+    ) external override {
         onlyWhitelistedAddress(_msgSender());
         onlyWhitelistedAddress(from);
         onlyWhitelistedAddress(to);
@@ -140,7 +137,7 @@ contract ERC1155BridgeTower is
         LibERC1155LazyMint.Mint1155Data memory data,
         address to,
         uint256 amount
-    ) public override onlyPartner(_msgSender()) {
+    ) public override {
         onlyWhitelistedAddress(_msgSender());
         onlyWhitelistedAddress(to);
 
@@ -190,18 +187,6 @@ contract ERC1155BridgeTower is
         onlyWhitelistedAddress(_msgSender());
 
         super.removeMinter(minter);
-    }
-
-    function addPartner(address partner) public override {
-        onlyWhitelistedAddress(_msgSender());
-
-        super.addPartner(partner);
-    }
-
-    function removePartner(address partner) public override {
-        onlyWhitelistedAddress(_msgSender());
-
-        super.removePartner(partner);
     }
 
     function transferOwnership(address newOwner) public override {

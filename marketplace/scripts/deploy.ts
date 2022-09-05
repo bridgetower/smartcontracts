@@ -22,21 +22,27 @@ async function main() {
    */
   let securitizeRegistryAddress: string = "";
 
-  switch (process.env.ENV) {
+  switch ((process.env.ENV || "DEV").trim()) {
     case "DEV":
-      securitizeRegistryAddress = process.env.SECURITIZE_REGISTRY_DEV || "";
+      securitizeRegistryAddress = (
+        process.env.SECURITIZE_REGISTRY_DEV || ""
+      ).trim();
       break;
     case "STAGING":
-      securitizeRegistryAddress = process.env.SECURITIZE_REGISTRY_STAGING || "";
+      securitizeRegistryAddress = (
+        process.env.SECURITIZE_REGISTRY_STAGING || ""
+      ).trim();
       break;
     case "PROD":
-      securitizeRegistryAddress = process.env.SECURITIZE_REGISTRY_PROD || "";
+      securitizeRegistryAddress = (
+        process.env.SECURITIZE_REGISTRY_PROD || ""
+      ).trim();
       break;
     default:
       break;
   }
 
-  if (process.env.HARDHAT_NETWORK === "localhost") {
+  if ((process.env.HARDHAT_NETWORK || "localhost").trim() === "localhost") {
     const SecuritizeRegistry: ContractFactory = await ethers.getContractFactory(
       "SecuritizeRegistry"
     );
@@ -175,9 +181,12 @@ async function main() {
   /**
    * ExchangeV2Proxy
    */
-  const protocolFee: BigNumber = BigNumber.from(process.env.PROTOCOL_FEE);
-  const defaultFeeReceiver: string =
-    process.env.DEFAULT_FEE_RECEIVER || signers[0].address;
+  const protocolFee: BigNumber = BigNumber.from(
+    (process.env.D_PROTOCOL_FEE || "0").trim()
+  );
+  const defaultFeeReceiver: string = (
+    process.env.D_DEFAULT_FEE_RECEIVER || signers[0].address
+  ).trim();
   const ExchangeV2: ContractFactory = await ethers.getContractFactory(
     "ExchangeV2"
   );
@@ -205,48 +214,78 @@ async function main() {
     await hre.upgrades.erc1967.getImplementationAddress(exchangeV2Proxy.address)
   );
 
-  tx = await exchangeV2Proxy.whitelistPaymentToken(process.env.USDC, true);
+  tx = await exchangeV2Proxy.whitelistPaymentToken(
+    (process.env.D_USDC || "").trim(),
+    true
+  );
 
   await tx.wait();
 
   /**
-   * ERC1155BridgeTowerProxy
+   * ERC1155BridgeTowerImplementation
    */
   const ERC1155BridgeTower: ContractFactory = await ethers.getContractFactory(
     "ERC1155BridgeTower"
   );
-  const erc1155BridgeTowerProxy: Contract = await upgrades.deployProxy(
-    ERC1155BridgeTower,
-    [
-      process.env.TOKEN_NAME,
-      process.env.TOKEN_SYMBOL,
-      "",
-      "",
+  const erc1155BridgeTowerImplementation: Contract =
+    await ERC1155BridgeTower.deploy();
+
+  await erc1155BridgeTowerImplementation.deployed();
+
+  console.log(
+    "ERC1155BridgeTowerImplementation: ",
+    erc1155BridgeTowerImplementation.address
+  );
+
+  /**
+   * ERC1155BridgeTowerBeacon
+   */
+  const ERC1155BridgeTowerBeacon: ContractFactory =
+    await ethers.getContractFactory("ERC1155BridgeTowerBeacon");
+  const erc1155BridgeTowerBeacon: Contract =
+    await ERC1155BridgeTowerBeacon.deploy(
+      erc1155BridgeTowerImplementation.address,
+      securitizeRegistryProxy.address,
+      contractsRegistryProxy.address
+    );
+
+  await erc1155BridgeTowerBeacon.deployed();
+
+  console.log("ERC1155BridgeTowerBeacon: ", erc1155BridgeTowerBeacon.address);
+
+  /**
+   * ERC1155BridgeTowerFactoryC2
+   */
+  const ERC1155BridgeTowerFactoryC2: ContractFactory =
+    await ethers.getContractFactory("ERC1155BridgeTowerFactoryC2");
+  const erc1155BridgeTowerFactoryC2: Contract =
+    await ERC1155BridgeTowerFactoryC2.deploy(
+      erc1155BridgeTowerBeacon.address,
       transferProxy.address,
       erc1155LazyMintTransferProxy.address,
       securitizeRegistryProxy.address,
-      contractsRegistryProxy.address,
-      0, // 0 seconds
-    ],
-    { initializer: "__ERC1155BridgeTower_init" }
-  );
+      contractsRegistryProxy.address
+    );
 
-  await erc1155BridgeTowerProxy.deployed();
+  await erc1155BridgeTowerFactoryC2.deployed();
 
-  console.log("ERC1155BridgeTowerProxy: ", erc1155BridgeTowerProxy.address);
   console.log(
-    "ERC1155BridgeTowerImplementation: ",
-    await hre.upgrades.erc1967.getImplementationAddress(
-      erc1155BridgeTowerProxy.address
-    ),
-    "\n"
+    "ERC1155BridgeTowerFactoryC2: ",
+    erc1155BridgeTowerFactoryC2.address
   );
 
-  tx = await erc1155BridgeTowerProxy.addPartner(
-    erc1155LazyMintTransferProxy.address
-  );
+  /**
+   * Add partners
+   */
+  const partners: string[] = process.env.D_PARTNERS
+    ? process.env.D_PARTNERS.split(",").map((partner) => partner.trim())
+    : [];
 
-  await tx.wait();
+  for (let i: number = 0; i < partners.length; ++i) {
+    tx = await erc1155BridgeTowerFactoryC2.addPartner(partners[i]);
+
+    await tx.wait();
+  }
 
   /**
    * Add operators
@@ -262,7 +301,6 @@ async function main() {
   /**
    * Whitelist contracts
    */
-
   tx = await contractsRegistry.addContract(securitizeRegistryAddress);
 
   await tx.wait();
@@ -293,15 +331,31 @@ async function main() {
 
   await tx.wait();
 
-  tx = await contractsRegistry.addContract(erc1155BridgeTowerProxy.address);
-
-  await tx.wait();
-
   tx = await contractsRegistry.addContract(royaltiesRegistry.address);
 
   await tx.wait();
 
   tx = await contractsRegistry.addContract(exchangeV2Proxy.address);
+
+  await tx.wait();
+
+  tx = await contractsRegistry.addContract(
+    await hre.upgrades.erc1967.getImplementationAddress(exchangeV2Proxy.address)
+  );
+
+  await tx.wait();
+
+  tx = await contractsRegistry.addContract(
+    erc1155BridgeTowerImplementation.address
+  );
+
+  await tx.wait();
+
+  tx = await contractsRegistry.addContract(erc1155BridgeTowerBeacon.address);
+
+  await tx.wait();
+
+  tx = await contractsRegistry.addContract(erc1155BridgeTowerFactoryC2.address);
 
   await tx.wait();
 }

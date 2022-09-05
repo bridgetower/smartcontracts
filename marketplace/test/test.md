@@ -112,6 +112,146 @@
 
 ## ERC1155BridgeTower
 
+1. `setSecuritizeRegistryProxy`:
+
+   - ✅ should fail if not an owner is trying to set a new securitize registry proxy;
+   - ✅ should fail if an owner is not whitelisted and is trying to set a new securitize registry proxy;
+   - ✅ should fail if a new securitize registry proxy is not a contract;
+   - ✅ should set a new securitize registry proxy by a whitelisted owner.
+
+2. `setContractsRegistryProxy`:
+
+   - ✅ should fail if not an owner is trying to set a new contracts registry proxy;
+   - ✅ should fail if an owner is not whitelisted and is trying to set a new contracts registry proxy;
+   - ✅ should fail if a new contracts registry proxy is not a contract;
+   - ✅ should set a new contracts registry proxy by a whitelisted owner.
+
+3. `__ERC1155BridgeTower_init`:
+
+   - ✅ should fail if a contract is already initialized.
+
+4. `__ERC1155BridgeTowerUser_init`:
+
+   - ✅ should fail if a contract is already initialized.
+
+5. `mintAndTransfer`:
+
+   - ✅ should fail if not a whitelisted wallet is trying to mint and transfer tokens;
+   - ✅ should fail if a whitelisted wallet is trying to mint and transfer tokens to not whitelisted wallet;
+   - ✅ should mint and transfer tokens by a whitelisted owner.
+
+6. `transferFromOrMint`:
+
+   - ✅ should fail if not a whitelisted wallet is trying to transfer or mint tokens;
+   - ✅ should fail if FROM is not a whitelisted wallet;
+   - ✅ should fail if TO is not a whitelisted wallet;
+   - ✅ should transfer or mint tokens by a whitelisted owner.
+
+7. `safeTransferFrom`:
+
+   - ✅ should fail if not a whitelisted wallet is trying to transfer tokens;
+   - ✅ should fail if FROM is not a whitelisted wallet;
+   - ✅ should fail if TO is not a whitelisted wallet;
+   - ✅ should transfer tokens;
+   - ✅ should fail if user is trying to transfer more than unlocked tokens amount;
+   - ✅ should lock proper amount of tokens;
+   - ✅ should unlock proper amount of tokens.
+
+8. `safeBatchTransferFrom`:
+
+   - ✅ should fail if not a whitelisted wallet is trying to transfer tokens in batch;
+   - ✅ should fail if FROM is not a whitelisted wallet;
+   - ✅ should fail if TO is not a whitelisted wallet;
+   - ✅ should transfer tokens in batch;
+   - ✅ should fail if user is trying to transfer more than unlocked tokens amount;
+   - ✅ should fail if user is trying to transfer more than unlocked tokens amount in one of transferred tokens in a batch;
+   - ✅ should unlock proper amount of tokens;
+   - ✅ should unlock proper amount of tokens in one of transferred tokens in a batch.
+
+9. `unlock`:
+
+   - ✅ should fail if not a whitelisted wallet is trying to unlock tokens;
+   - ✅ should fail if whitelisted user is trying to unlock tokens for not a whitelisted user;
+   - ✅ should not unlock tokens if nothing to unlock;
+   - ✅ should unlock proper amount of tokens.
+
+10. `getLockedAmount`:
+
+    - ✅ should return proper locked amount - 1;
+    - ✅ should return proper locked amount - 2;
+    - ✅ should return proper locked amount - 3.
+
+11. `getUnlockableAmount`:
+
+    - ✅ should return proper unlockable amount - 1;
+    - ✅ should return proper unlockable amount - 2;
+    - ✅ should return proper unlockable amount - 3.
+
+12. `getLocksInfo`:
+
+    - ✅ should return proper locks info.
+
+13. `updateAccount`:
+
+    - ✅ should fail if not a whitelisted wallet is trying to update the account;
+    - ✅ should update the account by a whitelisted user.
+
+14. `setBaseURI`:
+
+    - ✅ should fail if not a whitelisted owner is trying to set a new base URI;
+    - ✅ should set a new base URI by a whitelisted owner.
+
+15. `setApprovalForAll`:
+
+    - ✅ should fail if not a whitelisted user is trying to set approval for all;
+    - ✅ should set approval for all by a whitelisted user.
+
+16. `addMinter`:
+
+    - ✅ should fail if not a whitelisted owner is trying to add a new minter;
+    - ✅ should add a new minter by a whitelisted owner.
+
+17. `removeMinter`:
+
+    - ✅ should fail if not a whitelisted owner is trying to remove a minter;
+    - ✅ should remove a minter by a whitelisted owner.
+
+18. `transferOwnership`:
+
+    - ✅ should fail if not a whitelisted owner is trying to transfer ownership;
+    - ✅ should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user;
+    - ✅ should transfer ownership.
+
+19. `renounceOwnership`:
+
+    - ✅ should fail if not a whitelisted owner is trying to renounce ownership;
+    - ✅ should renounce ownership by a whitelisted owner.
+
+## ERC1155BridgeTowerBeacon
+
+1. `constructor`:
+
+   - ✅ should deploy a new beacon properly.
+
+2. `upgradeTo`:
+
+   - ✅ should fail if not a whitelisted owner is trying to upgrade an implementation address;
+   - ✅ should fail if not an owner is trying to upgrade an implementation address;
+   - ✅ should upgrade to a new implementation properly.
+
+3. `renounceOwnership`:
+
+   - ✅ should fail if not a whitelisted owner is trying to transfer ownership;
+   - ✅ should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user;
+   - ✅ should transfer ownership.
+
+4. `transferOwnership`:
+
+   - ✅ should fail if not a whitelisted owner is trying to renounce ownership;
+   - ✅ should renounce ownership by a whitelisted owner.
+
+## ERC1155BridgeTowerFactoryC2
+
 1. `addPartner`:
 
    - ✅ should fail if not a whitelisted wallet is trying to add a new partner;
@@ -129,129 +269,39 @@
    - ✅ should fail if not an owner is trying to remove a partner;
    - ✅ should remove a partner by a whitelisted owner.
 
-4. `setSecuritizeRegistryProxy`:
+4. `constructor`:
 
-   - ✅ should fail if not an owner is trying to set a new securitize registry proxy;
-   - ✅ should fail if an owner is not whitelisted and is trying to set a new securitize registry proxy;
-   - ✅ should fail if a new securitize registry proxy is not a contract;
-   - ✅ should set a new securitize registry proxy by a whitelisted owner.
+   - ✅ should deploy a new factory properly.
 
-5. `setContractsRegistryProxy`:
+5. `addPartner`:
 
-   - ✅ should fail if not an owner is trying to set a new contracts registry proxy;
-   - ✅ should fail if an owner is not whitelisted and is trying to set a new contracts registry proxy;
-   - ✅ should fail if a new contracts registry proxy is not a contract;
-   - ✅ should set a new contracts registry proxy by a whitelisted owner.
+   - ✅ should fail if not a whitelisted owner is trying to add a new partner;
+   - ✅ should add a new partner by a whitelisted owner.
 
-6. `__ERC1155BridgeTower_init`:
+6. `removePartner`:
 
-   - ✅ should fail if a contract is already initialized.
+   - ✅ should fail if not a whitelisted owner is trying to remove a partner;
+   - ✅ should remove a partner by a whitelisted owner.
 
-7. `__ERC1155BridgeTowerUser_init`:
+7. `createToken`:
 
-   - ✅ should fail if a contract is already initialized.
+   - ✅ should fail if not a partner is trying to create a new token;
+   - ✅ should fail if not a whitelisted partner is trying to create a new token;
+   - ✅ should create a new token by a whitelisted partner.
 
-8. `mintAndTransfer`:
+8. `createToken`:
 
-   - ✅ should fail if not a partner is trying to mint and transfer tokens;
-   - ✅ should fail if not a whitelisted wallet is trying to mint and transfer tokens;
-   - ✅ should fail if a whitelisted wallet is trying to mint and transfer tokens to not whitelisted wallet;
-   - ✅ should mint and transfer tokens by a whitelisted partner.
+   - ✅ should fail if not a partner is trying to create a new token;
+   - ✅ should fail if not a whitelisted partner is trying to create a new token;
+   - ✅ should create a new token by a whitelisted partner.
 
-9. `transferFromOrMint`:
+9. `renounceOwnership`:
 
-   - ✅ should fail if not a partner is trying to transfer or mint tokens;
-   - ✅ should fail if not a whitelisted wallet is trying to transfer or mint tokens;
-   - ✅ should fail if FROM is not a whitelisted wallet;
-   - ✅ should fail if TO is not a whitelisted wallet;
-   - ✅ should transfer or mint tokens by a whitelisted partner.
+   - ✅ should fail if not a whitelisted owner is trying to transfer ownership;
+   - ✅ should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user;
+   - ✅ should transfer ownership.
 
-10. `safeTransferFrom`:
-
-    - ✅ should fail if not a whitelisted wallet is trying to transfer tokens;
-    - ✅ should fail if FROM is not a whitelisted wallet;
-    - ✅ should fail if TO is not a whitelisted wallet;
-    - ✅ should transfer tokens;
-    - ✅ should fail if user is trying to transfer more than unlocked tokens amount;
-    - ✅ should lock proper amount of tokens;
-    - ✅ should unlock proper amount of tokens.
-
-11. `safeBatchTransferFrom`:
-
-    - ✅ should fail if not a whitelisted wallet is trying to transfer tokens in batch;
-    - ✅ should fail if FROM is not a whitelisted wallet;
-    - ✅ should fail if TO is not a whitelisted wallet;
-    - ✅ should transfer tokens in batch;
-    - ✅ should fail if user is trying to transfer more than unlocked tokens amount;
-    - ✅ should fail if user is trying to transfer more than unlocked tokens amount in one of transferred tokens in a batch;
-    - ✅ should unlock proper amount of tokens;
-    - ✅ should unlock proper amount of tokens in one of transferred tokens in a batch.
-
-12. `unlock`:
-
-    - ✅ should fail if not a whitelisted wallet is trying to unlock tokens;
-    - ✅ should fail if whitelisted user is trying to unlock tokens for not a whitelisted user;
-    - ✅ should not unlock tokens if nothing to unlock;
-    - ✅ should unlock proper amount of tokens.
-
-13. `getLockedAmount`:
-
-    - ✅ should return proper locked amount - 1;
-    - ✅ should return proper locked amount - 2;
-    - ✅ should return proper locked amount - 3.
-
-14. `getUnlockableAmount`:
-
-    - ✅ should return proper unlockable amount - 1;
-    - ✅ should return proper unlockable amount - 2;
-    - ✅ should return proper unlockable amount - 3.
-
-15. `getLocksInfo`:
-
-    - ✅ should return proper locks info.
-
-16. `updateAccount`:
-
-    - ✅ should fail if not a whitelisted wallet is trying to update the account;
-    - ✅ should update the account by a whitelisted user.
-
-17. `setBaseURI`:
-
-    - ✅ should fail if not a whitelisted owner is trying to set a new base URI;
-    - ✅ should set a new base URI by a whitelisted owner.
-
-18. `setApprovalForAll`:
-
-    - ✅ should fail if not a whitelisted user is trying to set approval for all;
-    - ✅ should set approval for all by a whitelisted user.
-
-19. `addMinter`:
-
-    - ✅ should fail if not a whitelisted owner is trying to add a new minter;
-    - ✅ should add a new minter by a whitelisted owner.
-
-20. `removeMinter`:
-
-    - ✅ should fail if not a whitelisted owner is trying to remove a minter;
-    - ✅ should remove a minter by a whitelisted owner.
-
-21. `addPartner`:
-
-    - ✅ should fail if not a whitelisted owner is trying to add a new partner;
-    - ✅ should add a new partner by a whitelisted owner.
-
-22. `removePartner`:
-
-    - ✅ should fail if not a whitelisted owner is trying to remove a partner;
-    - ✅ should remove a partner by a whitelisted owner.
-
-23. `transferOwnership`:
-
-    - ✅ should fail if not a whitelisted owner is trying to transfer ownership;
-    - ✅ should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user;
-    - ✅ should transfer ownership.
-
-24. `renounceOwnership`:
+10. `transferOwnership`:
 
     - ✅ should fail if not a whitelisted owner is trying to renounce ownership;
     - ✅ should renounce ownership by a whitelisted owner.

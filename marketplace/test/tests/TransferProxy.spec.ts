@@ -298,7 +298,6 @@ describe("TransferProxy", () => {
       };
       const to: string = alice.address;
 
-      await erc1155BridgeTowerProxy.connect(alice).addPartner(alice.address);
       await erc1155BridgeTowerProxy
         .connect(alice)
         .mintAndTransfer(data, to, supply);

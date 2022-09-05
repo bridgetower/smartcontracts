@@ -182,8 +182,6 @@ describe("ExchangeV2", () => {
 
     await erc20Mock1.transfer(bob.address, 10000);
 
-    await erc1155BridgeTowerProxy.addPartner(alice.address);
-
     const tokenId: BigNumber = generateTokenID(alice.address);
 
     tokenID = tokenId;

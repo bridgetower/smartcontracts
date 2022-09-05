@@ -252,7 +252,6 @@ describe("ERC1155LazyMintTransferProxy", () => {
         value: BigNumber.from(100),
       };
 
-      await erc1155BridgeTowerProxy.connect(alice).addPartner(alice.address);
       await erc1155BridgeTowerProxy
         .connect(alice)
         .mintAndTransfer(mint1155Data, alice.address, amount);
@@ -267,9 +266,6 @@ describe("ERC1155LazyMintTransferProxy", () => {
       await contractsRegistry
         .connect(alice)
         .addContract(erc1155LazyMintTransferProxy.address);
-      await erc1155BridgeTowerProxy
-        .connect(alice)
-        .addPartner(erc1155LazyMintTransferProxy.address);
       await erc1155LazyMintTransferProxy
         .connect(alice)
         .transfer(asset, alice.address, bob.address);

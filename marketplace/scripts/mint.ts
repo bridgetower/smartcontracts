@@ -4,7 +4,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { generateTokenID } from "../test/utils/helpers";
 import { MintERC1155Data } from "../test/utils/types";
 
-import links from "./data/links.json";
+import mintData from "./data/mintData.json";
 
 import { ethers } from "hardhat";
 
@@ -26,22 +26,16 @@ async function main() {
     "ERC1155BridgeTower"
   );
   const erc1155BridgeTowerProxy: Contract = ERC1155BridgeTower.attach(
-    process.env.ERC1155_BRIDGE_TOWER_PROXY || ""
+    (process.env.M_COLLECTION || "").trim()
   );
   const signers: SignerWithAddress[] = await ethers.getSigners();
 
-  let tx: ContractTransaction = await erc1155BridgeTowerProxy.addPartner(
-    signers[0].address
-  );
-
-  await tx.wait();
-
-  for (let i: number = 1; i <= 80; i++) {
+  for (let i: number = 1; i <= mintData.length; ++i) {
     const tokenId: BigNumber = generateTokenID(signers[0].address);
     const data: MintERC1155Data = {
       tokenId: tokenId,
-      tokenURI: links[i - 1],
-      supply: BigNumber.from(1000),
+      tokenURI: mintData[i - 1].ipfs_link,
+      supply: BigNumber.from(mintData[i - 1].supply),
       creators: [
         {
           account: signers[0].address,
@@ -51,15 +45,15 @@ async function main() {
       royalties: [
         {
           account: signers[0].address,
-          value: BigNumber.from(process.env.ROYALTIES),
+          value: BigNumber.from((process.env.M_ROYALTIES || "0").trim()),
         },
       ],
       signatures: [constants.ZERO_ADDRESS],
     };
     const to: string = signers[0].address;
-    const amount: BigNumber = BigNumber.from(1000);
-
-    tx = await erc1155BridgeTowerProxy.mintAndTransfer(data, to, amount);
+    const amount: BigNumber = BigNumber.from(mintData[i - 1].supply);
+    const tx: ContractTransaction =
+      await erc1155BridgeTowerProxy.mintAndTransfer(data, to, amount);
 
     await tx.wait();
 

@@ -185,87 +185,6 @@ describe("ERC1155BridgeTower", () => {
       .whitelistPaymentToken(erc20Mock.address, true);
   });
 
-  describe("PartnerAccessControl", () => {
-    describe("addPartner", () => {
-      it("should fail if not a whitelisted wallet is trying to add a new partner", async () => {
-        await securitizeRegistry.removeWallet(alice.address);
-        await expect(
-          erc1155BridgeTowerProxy.connect(alice).addPartner(alice.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
-      });
-
-      it("should fail if not an owner is trying to add a new partner", async () => {
-        await securitizeRegistry.connect(alice).addWallet(bob.address);
-        await expect(
-          erc1155BridgeTowerProxy.connect(bob).addPartner(bob.address)
-        ).to.be.revertedWith("Ownable: caller is not the owner");
-      });
-
-      it("should add a new partner by a whitelisted owner", async () => {
-        expect(
-          await erc1155BridgeTowerProxy.connect(alice).isPartner(bob.address)
-        ).to.be.equal(false);
-
-        await securitizeRegistry.connect(alice).addWallet(alice.address);
-        await expect(
-          erc1155BridgeTowerProxy.connect(alice).addPartner(bob.address)
-        )
-          .to.emit(erc1155BridgeTowerProxy, "PartnerStatusChanged")
-          .withArgs(bob.address, true);
-
-        expect(
-          await erc1155BridgeTowerProxy.connect(alice).isPartner(bob.address)
-        ).to.be.equal(true);
-      });
-    });
-
-    describe("isPartner", () => {
-      it("should return true", async () => {
-        expect(
-          await erc1155BridgeTowerProxy.connect(alice).isPartner(bob.address)
-        ).to.be.equal(true);
-      });
-
-      it("should return false", async () => {
-        expect(
-          await erc1155BridgeTowerProxy.connect(alice).isPartner(alice.address)
-        ).to.be.equal(false);
-      });
-    });
-
-    describe("removePartner", () => {
-      it("should fail if not a whitelisted wallet is trying to remove a partner", async () => {
-        await securitizeRegistry.connect(alice).removeWallet(alice.address);
-        await expect(
-          erc1155BridgeTowerProxy.connect(alice).removePartner(alice.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
-      });
-
-      it("should fail if not an owner is trying to remove a partner", async () => {
-        await expect(
-          erc1155BridgeTowerProxy.connect(bob).removePartner(bob.address)
-        ).to.be.revertedWith("Ownable: caller is not the owner");
-      });
-
-      it("should remove a partner by a whitelisted owner", async () => {
-        expect(
-          await erc1155BridgeTowerProxy.connect(alice).isPartner(bob.address)
-        ).to.be.equal(true);
-
-        await securitizeRegistry.connect(alice).addWallet(alice.address);
-        await expect(
-          erc1155BridgeTowerProxy.connect(alice).removePartner(bob.address)
-        )
-          .to.emit(erc1155BridgeTowerProxy, "PartnerStatusChanged")
-          .withArgs(bob.address, false);
-
-        expect(
-          await erc1155BridgeTowerProxy.connect(alice).isPartner(bob.address)
-        ).to.be.equal(false);
-      });
-    });
-  });
-
   describe("WhitelistableUpgradeable", () => {
     describe("setSecuritizeRegistryProxy", () => {
       it("should fail if not an owner is trying to set a new securitize registry proxy", async () => {
@@ -416,33 +335,6 @@ describe("ERC1155BridgeTower", () => {
     });
 
     describe("mintAndTransfer", () => {
-      it("should fail if not a partner is trying to mint and transfer tokens", async () => {
-        const data: MintERC1155Data = {
-          tokenId: generateTokenID(alice.address),
-          tokenURI: "",
-          supply: BigNumber.from(1000),
-          creators: [
-            {
-              account: alice.address,
-              value: BigNumber.from(10000),
-            },
-          ],
-          royalties: [
-            {
-              account: alice.address,
-              value: BigNumber.from(1000),
-            },
-          ],
-          signatures: [constants.ZERO_ADDRESS],
-        };
-        const to: string = alice.address;
-        const amount: BigNumber = BigNumber.from(1000);
-
-        await expect(
-          erc1155BridgeTowerProxy.connect(bob).mintAndTransfer(data, to, amount)
-        ).to.be.revertedWith("PartnerAccessControl: caller is not a partner");
-      });
-
       it("should fail if not a whitelisted wallet is trying to mint and transfer tokens", async () => {
         const data: MintERC1155Data = {
           tokenId: generateTokenID(alice.address),
@@ -465,7 +357,6 @@ describe("ERC1155BridgeTower", () => {
         const to: string = alice.address;
         const amount: BigNumber = BigNumber.from(1000);
 
-        await erc1155BridgeTowerProxy.connect(alice).addPartner(alice.address);
         await securitizeRegistry.connect(alice).removeWallet(alice.address);
         await expect(
           erc1155BridgeTowerProxy
@@ -497,7 +388,6 @@ describe("ERC1155BridgeTower", () => {
         const amount: BigNumber = BigNumber.from(1000);
 
         await securitizeRegistry.connect(alice).addWallet(alice.address);
-        await erc1155BridgeTowerProxy.connect(alice).addPartner(alice.address);
         await expect(
           erc1155BridgeTowerProxy
             .connect(alice)
@@ -505,9 +395,7 @@ describe("ERC1155BridgeTower", () => {
         ).to.be.revertedWith("Whitelistable: address is not whitelisted");
       });
 
-      it("should mint and transfer tokens by a whitelisted partner", async () => {
-        await erc1155BridgeTowerProxy.connect(alice).addPartner(bob.address);
-
+      it("should mint and transfer tokens by a whitelisted owner", async () => {
         let tokenId: BigNumber = generateTokenID(bob.address);
 
         tokenID1 = tokenId;
@@ -533,6 +421,7 @@ describe("ERC1155BridgeTower", () => {
         const to: string = bob.address;
         const amount: BigNumber = BigNumber.from(1000);
 
+        await securitizeRegistry.connect(alice).addWallet(bob.address);
         await erc1155BridgeTowerProxy
           .connect(bob)
           .mintAndTransfer(data, to, amount);
@@ -558,37 +447,6 @@ describe("ERC1155BridgeTower", () => {
     });
 
     describe("transferFromOrMint", () => {
-      it("should fail if not a partner is trying to transfer or mint tokens", async () => {
-        const data: MintERC1155Data = {
-          tokenId: generateTokenID(alice.address),
-          tokenURI: "",
-          supply: BigNumber.from(1000),
-          creators: [
-            {
-              account: alice.address,
-              value: BigNumber.from(10000),
-            },
-          ],
-          royalties: [
-            {
-              account: alice.address,
-              value: BigNumber.from(1000),
-            },
-          ],
-          signatures: [constants.ZERO_ADDRESS],
-        };
-        const from: string = alice.address;
-        const to: string = alice.address;
-        const amount: BigNumber = BigNumber.from(1000);
-
-        await erc1155BridgeTowerProxy.connect(alice).removePartner(bob.address);
-        await expect(
-          erc1155BridgeTowerProxy
-            .connect(bob)
-            .transferFromOrMint(data, from, to, amount)
-        ).to.be.revertedWith("PartnerAccessControl: caller is not a partner");
-      });
-
       it("should fail if not a whitelisted wallet is trying to transfer or mint tokens", async () => {
         const data: MintERC1155Data = {
           tokenId: generateTokenID(alice.address),
@@ -681,9 +539,7 @@ describe("ERC1155BridgeTower", () => {
         ).to.be.revertedWith("Whitelistable: address is not whitelisted");
       });
 
-      it("should transfer or mint tokens by a whitelisted partner", async () => {
-        await erc1155BridgeTowerProxy.connect(alice).addPartner(bob.address);
-
+      it("should transfer or mint tokens by a whitelisted owner", async () => {
         const tokenId: BigNumber = generateTokenID(bob.address);
         const data: MintERC1155Data = {
           tokenId: tokenId,
@@ -1542,52 +1398,6 @@ describe("ERC1155BridgeTower", () => {
 
         expect(
           await erc1155BridgeTowerProxy.connect(alice).isMinter(bob.address)
-        ).to.be.equal(false);
-      });
-    });
-
-    describe("addPartner", () => {
-      it("should fail if not a whitelisted owner is trying to add a new partner", async () => {
-        await securitizeRegistry.connect(alice).removeWallet(alice.address);
-        await expect(
-          erc1155BridgeTowerProxy.connect(alice).addPartner(carol.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
-      });
-
-      it("should add a new partner by a whitelisted owner", async () => {
-        expect(
-          await erc1155BridgeTowerProxy.connect(alice).isPartner(carol.address)
-        ).to.be.equal(false);
-
-        await securitizeRegistry.connect(alice).addWallet(alice.address);
-        await erc1155BridgeTowerProxy.connect(alice).addPartner(carol.address);
-
-        expect(
-          await erc1155BridgeTowerProxy.connect(alice).isPartner(carol.address)
-        ).to.be.equal(true);
-      });
-    });
-
-    describe("removePartner", () => {
-      it("should fail if not a whitelisted owner is trying to remove a partner", async () => {
-        await securitizeRegistry.connect(alice).removeWallet(alice.address);
-        await expect(
-          erc1155BridgeTowerProxy.connect(alice).removePartner(carol.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
-      });
-
-      it("should remove a partner by a whitelisted owner", async () => {
-        expect(
-          await erc1155BridgeTowerProxy.connect(alice).isPartner(carol.address)
-        ).to.be.equal(true);
-
-        await securitizeRegistry.connect(alice).addWallet(alice.address);
-        await erc1155BridgeTowerProxy
-          .connect(alice)
-          .removePartner(carol.address);
-
-        expect(
-          await erc1155BridgeTowerProxy.connect(alice).isPartner(carol.address)
         ).to.be.equal(false);
       });
     });

@@ -57,8 +57,8 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
-      avalanche: process.env.SNOWTRACE_API_KEY || "",
-      avalancheFujiTestnet: process.env.SNOWTRACE_API_KEY || "",
+      avalanche: process.env.V_SNOWTRACE_API_KEY || "",
+      avalancheFujiTestnet: process.env.V_SNOWTRACE_API_KEY || "",
     },
   },
   docgen: {
