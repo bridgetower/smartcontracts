@@ -43,8 +43,8 @@ async function main() {
 
   console.log(
     events?.length === 1
-      ? events[0].args?.length === 1
-        ? `Collection: ${events[0].args[0]}`
+      ? events[0].args?.length === 2
+        ? `Collection: ${events[0].args[1]}`
         : "Something went wrong. Collection isn't deployed. Please, try again"
       : "Something went wrong. Collection isn't deployed. Please, try again"
   );

@@ -27,8 +27,8 @@ contract ERC1155BridgeTowerFactoryC2 is
     address internal transferProxy;
     address internal lazyTransferProxy;
 
-    event CreateERC1155BridgeTowerProxy(address proxy);
-    event CreateERC1155BridgeTowerUserProxy(address proxy);
+    event CreateERC1155BridgeTowerProxy(address deployer, address proxy);
+    event CreateERC1155BridgeTowerUserProxy(address deployer, address proxy);
 
     constructor(
         address _beacon,
@@ -55,7 +55,7 @@ contract ERC1155BridgeTowerFactoryC2 is
         string memory contractURI,
         uint256 lockPeriod,
         uint256 salt
-    ) external onlyPartner(_msgSender()) {
+    ) external onlyPartner(_msgSender()) returns (address) {
         onlyWhitelistedAddress(_msgSender());
 
         address beaconProxy = deployProxy(
@@ -66,7 +66,9 @@ contract ERC1155BridgeTowerFactoryC2 is
 
         token.transferOwnership(_msgSender());
 
-        emit CreateERC1155BridgeTowerProxy(beaconProxy);
+        emit CreateERC1155BridgeTowerProxy(_msgSender(), beaconProxy);
+
+        return beaconProxy;
     }
 
     function createToken(
@@ -77,7 +79,7 @@ contract ERC1155BridgeTowerFactoryC2 is
         address[] memory operators,
         uint256 lockPeriod,
         uint256 salt
-    ) external onlyPartner(_msgSender()) {
+    ) external onlyPartner(_msgSender()) returns (address) {
         onlyWhitelistedAddress(_msgSender());
 
         address beaconProxy = deployProxy(
@@ -95,7 +97,9 @@ contract ERC1155BridgeTowerFactoryC2 is
 
         token.transferOwnership(_msgSender());
 
-        emit CreateERC1155BridgeTowerUserProxy(beaconProxy);
+        emit CreateERC1155BridgeTowerUserProxy(_msgSender(), beaconProxy);
+
+        return beaconProxy;
     }
 
     function addPartner(address partner) public override {

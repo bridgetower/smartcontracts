@@ -361,7 +361,7 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
           ](name, symbol, baseURI, contractURI, lockPeriod, salt)
       )
         .to.emit(erc1155BridgeTowerFactoryC2, "CreateERC1155BridgeTowerProxy")
-        .withArgs(fututreTokenAddress);
+        .withArgs(alice.address, fututreTokenAddress);
 
       const erc1155BridgeTowerProxy: Contract =
         ERC1155BridgeTower.attach(fututreTokenAddress);
@@ -445,7 +445,7 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
           erc1155BridgeTowerFactoryC2,
           "CreateERC1155BridgeTowerUserProxy"
         )
-        .withArgs(fututreTokenAddress);
+        .withArgs(alice.address, fututreTokenAddress);
 
       const erc1155BridgeTowerProxy: Contract =
         ERC1155BridgeTower.attach(fututreTokenAddress);

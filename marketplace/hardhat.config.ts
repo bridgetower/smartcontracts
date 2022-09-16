@@ -40,13 +40,15 @@ const config: HardhatUserConfig = {
   networks: {
     avalanche_testnet: {
       url: "https://api.avax-test.network/ext/bc/C/rpc",
-      gasPrice: 225000000000,
+      gasPrice: 30000000000,
+      gas: 3000000,
       chainId: 43113,
       accounts: [process.env.PRIVATE_KEY || ""],
     },
     avalanche: {
       url: "https://api.avax.network/ext/bc/C/rpc",
-      gasPrice: 225000000000,
+      gasPrice: 30000000000,
+      gas: 3000000,
       chainId: 43114,
       accounts: [],
     },
