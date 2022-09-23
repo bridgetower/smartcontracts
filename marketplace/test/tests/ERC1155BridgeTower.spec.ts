@@ -8,9 +8,7 @@ import { MintERC1155Data, Order } from "../utils/types";
 
 import { ethers, upgrades } from "hardhat";
 
-import { solidity } from "ethereum-waffle";
-
-import chai, { expect } from "chai";
+import { expect } from "chai";
 
 import {
   generateTokenID,
@@ -23,8 +21,6 @@ import {
 } from "../utils/helpers";
 
 const { constants } = require("@openzeppelin/test-helpers");
-
-chai.use(solidity);
 
 describe("ERC1155BridgeTower", () => {
   let alice: SignerWithAddress;
@@ -201,7 +197,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .setSecuritizeRegistryProxy(securitizeRegistryProxy.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should fail if a new securitize registry proxy is not a contract", async () => {
@@ -254,7 +255,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .setContractsRegistryProxy(contractsRegistryProxy.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should fail if a new contracts registry proxy is not a contract", async () => {
@@ -362,7 +368,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .mintAndTransfer(data, to, amount)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should fail if a whitelisted wallet is trying to mint and transfer tokens to not whitelisted wallet", async () => {
@@ -392,7 +403,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .mintAndTransfer(data, to, amount)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(to);
       });
 
       it("should mint and transfer tokens by a whitelisted owner", async () => {
@@ -475,7 +491,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .transferFromOrMint(data, from, to, amount)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should fail if FROM is not a whitelisted wallet", async () => {
@@ -506,7 +527,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .transferFromOrMint(data, from, to, amount)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(from);
       });
 
       it("should fail if TO is not a whitelisted wallet", async () => {
@@ -536,7 +562,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .transferFromOrMint(data, from, to, amount)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(to);
       });
 
       it("should transfer or mint tokens by a whitelisted owner", async () => {
@@ -595,7 +626,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .safeTransferFrom(from, to, id, amount, data)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should fail if FROM is not a whitelisted wallet", async () => {
@@ -611,7 +647,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .safeTransferFrom(from, to, id, amount, data)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(from);
       });
 
       it("should fail if TO is not a whitelisted wallet", async () => {
@@ -625,7 +666,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .safeTransferFrom(from, to, id, amount, data)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(to);
       });
 
       it("should transfer tokens", async () => {
@@ -795,7 +841,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .safeBatchTransferFrom(from, to, ids, amounts, data)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should fail if FROM is not a whitelisted wallet", async () => {
@@ -811,7 +862,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .safeBatchTransferFrom(from, to, ids, amounts, data)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(from);
       });
 
       it("should fail if TO is not a whitelisted wallet", async () => {
@@ -825,7 +881,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .safeBatchTransferFrom(from, to, ids, amounts, data)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(to);
       });
 
       it("should transfer tokens in batch", async () => {
@@ -1005,14 +1066,24 @@ describe("ERC1155BridgeTower", () => {
         await securitizeRegistry.connect(alice).removeWallet(alice.address);
         await expect(
           erc1155BridgeTowerProxy.connect(alice).unlock(alice.address, tokenID1)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should fail if whitelisted user is trying to unlock tokens for not a whitelisted user", async () => {
         await securitizeRegistry.connect(alice).addWallet(alice.address);
         await expect(
           erc1155BridgeTowerProxy.connect(alice).unlock(carol.address, tokenID1)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(carol.address);
       });
 
       it("should not unlock tokens if nothing to unlock", async () => {
@@ -1289,7 +1360,12 @@ describe("ERC1155BridgeTower", () => {
         await securitizeRegistry.connect(alice).removeWallet(alice.address);
         await expect(
           erc1155BridgeTowerProxy.connect(alice).updateAccount(id, from, to)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should update the account by a whitelisted user", async () => {
@@ -1319,9 +1395,12 @@ describe("ERC1155BridgeTower", () => {
 
     describe("setBaseURI", () => {
       it("should fail if not a whitelisted owner is trying to set a new base URI", async () => {
-        await expect(
-          erc1155BridgeTowerProxy.connect(alice).setBaseURI("")
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        await expect(erc1155BridgeTowerProxy.connect(alice).setBaseURI(""))
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should set a new base URI by a whitelisted owner", async () => {
@@ -1342,7 +1421,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(carol)
             .setApprovalForAll(alice.address, true)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(carol.address);
       });
 
       it("should set approval for all by a whitelisted user", async () => {
@@ -1363,7 +1447,12 @@ describe("ERC1155BridgeTower", () => {
         await securitizeRegistry.connect(alice).removeWallet(alice.address);
         await expect(
           erc1155BridgeTowerProxy.connect(alice).addMinter(bob.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should add a new minter by a whitelisted owner", async () => {
@@ -1385,7 +1474,12 @@ describe("ERC1155BridgeTower", () => {
         await securitizeRegistry.connect(alice).removeWallet(alice.address);
         await expect(
           erc1155BridgeTowerProxy.connect(alice).removeMinter(bob.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should remove a minter by a whitelisted owner", async () => {
@@ -1407,7 +1501,12 @@ describe("ERC1155BridgeTower", () => {
         await securitizeRegistry.connect(alice).removeWallet(alice.address);
         await expect(
           erc1155BridgeTowerProxy.connect(alice).transferOwnership(bob.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user", async () => {
@@ -1416,7 +1515,12 @@ describe("ERC1155BridgeTower", () => {
           erc1155BridgeTowerProxy
             .connect(alice)
             .transferOwnership(carol.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(carol.address);
       });
 
       it("should transfer ownership", async () => {
@@ -1437,9 +1541,12 @@ describe("ERC1155BridgeTower", () => {
     describe("renounceOwnership", () => {
       it("should fail if not a whitelisted owner is trying to renounce ownership", async () => {
         await securitizeRegistry.connect(alice).removeWallet(bob.address);
-        await expect(
-          erc1155BridgeTowerProxy.connect(bob).renounceOwnership()
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        await expect(erc1155BridgeTowerProxy.connect(bob).renounceOwnership())
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerProxy,
+            "NotWhitelisted"
+          )
+          .withArgs(bob.address);
       });
 
       it("should renounce ownership by a whitelisted owner", async () => {

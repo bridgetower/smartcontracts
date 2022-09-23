@@ -8,9 +8,7 @@ import { MintERC1155Data, Order } from "../utils/types";
 
 import { ethers, upgrades } from "hardhat";
 
-import { solidity } from "ethereum-waffle";
-
-import chai, { expect } from "chai";
+import { expect } from "chai";
 
 import {
   generateTokenID,
@@ -23,8 +21,6 @@ import {
 } from "../utils/helpers";
 
 const { constants } = require("@openzeppelin/test-helpers");
-
-chai.use(solidity);
 
 describe("ExchangeV2", () => {
   let alice: SignerWithAddress;
@@ -237,7 +233,9 @@ describe("ExchangeV2", () => {
         exchangeV2Proxy
           .connect(alice)
           .whitelistPaymentToken(erc20Mock1.address, true)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to whitelist a payment token", async () => {
@@ -308,7 +306,9 @@ describe("ExchangeV2", () => {
       await securitizeRegistry.connect(alice).removeWallet(alice.address);
       await expect(
         exchangeV2Proxy.connect(alice).whitelistNativePaymentToken(true)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to whitelist a native payment token", async () => {
@@ -378,9 +378,9 @@ describe("ExchangeV2", () => {
       const leftOrder: Order = getLeftOrder(alice.address);
 
       await securitizeRegistry.connect(alice).removeWallet(alice.address);
-      await expect(
-        exchangeV2Proxy.connect(alice).cancel(leftOrder)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      await expect(exchangeV2Proxy.connect(alice).cancel(leftOrder))
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should cancel an order by a whitelisted wallet", async () => {
@@ -409,7 +409,9 @@ describe("ExchangeV2", () => {
             rightOrder,
             sign(rightOrder, bob, exchangeV2Proxy.address)
           )
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if a maker of a left order is not a whitelisted wallet", async () => {
@@ -426,7 +428,9 @@ describe("ExchangeV2", () => {
             rightOrder,
             sign(rightOrder, bob, exchangeV2Proxy.address)
           )
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(leftOrder.maker);
     });
 
     it("should fail if a maker of a right order is not a whitelisted wallet", async () => {
@@ -444,7 +448,9 @@ describe("ExchangeV2", () => {
             rightOrder,
             sign(rightOrder, bob, exchangeV2Proxy.address)
           )
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(rightOrder.maker);
     });
 
     it("should fail if a taker of a left order is not a whitelisted wallet", async () => {
@@ -463,7 +469,9 @@ describe("ExchangeV2", () => {
             rightOrder,
             sign(rightOrder, bob, exchangeV2Proxy.address)
           )
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(leftOrder.taker);
     });
 
     it("should fail if a taker of a right order is not a whitelisted wallet", async () => {
@@ -481,7 +489,9 @@ describe("ExchangeV2", () => {
             rightOrder,
             sign(rightOrder, bob, exchangeV2Proxy.address)
           )
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(rightOrder.taker);
     });
 
     it("should fail if one of the payment assets from the left order isn't supported", async () => {
@@ -614,7 +624,9 @@ describe("ExchangeV2", () => {
         exchangeV2Proxy
           .connect(alice)
           .setAssetMatcher(bytes4(keccak256Hash("AVAX")), alice.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to set asset matcher", async () => {
@@ -642,7 +654,9 @@ describe("ExchangeV2", () => {
       await securitizeRegistry.connect(alice).removeWallet(alice.address);
       await expect(
         exchangeV2Proxy.connect(alice).setDefaultFeeReceiver(alice.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to set a default fee receiver", async () => {
@@ -668,7 +682,9 @@ describe("ExchangeV2", () => {
         exchangeV2Proxy
           .connect(alice)
           .setFeeReceiver(erc1155BridgeTowerProxy.address, alice.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to set a fee receiver", async () => {
@@ -698,7 +714,9 @@ describe("ExchangeV2", () => {
       await securitizeRegistry.connect(alice).removeWallet(alice.address);
       await expect(
         exchangeV2Proxy.connect(alice).setProtocolFee(BigNumber.from(100))
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to set a protocol fee", async () => {
@@ -729,7 +747,9 @@ describe("ExchangeV2", () => {
       await securitizeRegistry.connect(alice).removeWallet(alice.address);
       await expect(
         exchangeV2Proxy.connect(alice).setRoyaltiesRegistry(alice.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to set a royalties registry", async () => {
@@ -755,7 +775,9 @@ describe("ExchangeV2", () => {
         exchangeV2Proxy
           .connect(alice)
           .setTransferProxy(bytes4(keccak256Hash("AVAX")), alice.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to set transfer proxy", async () => {
@@ -783,7 +805,9 @@ describe("ExchangeV2", () => {
       await securitizeRegistry.connect(alice).removeWallet(alice.address);
       await expect(
         exchangeV2Proxy.connect(alice).transferOwnership(bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user", async () => {
@@ -791,7 +815,9 @@ describe("ExchangeV2", () => {
       await securitizeRegistry.connect(alice).removeWallet(carol.address);
       await expect(
         exchangeV2Proxy.connect(alice).transferOwnership(carol.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(carol.address);
     });
 
     it("should transfer ownership", async () => {
@@ -810,9 +836,9 @@ describe("ExchangeV2", () => {
   describe("renounceOwnership", () => {
     it("should fail if not a whitelisted owner is trying to renounce ownership", async () => {
       await securitizeRegistry.connect(alice).removeWallet(bob.address);
-      await expect(
-        exchangeV2Proxy.connect(bob).renounceOwnership()
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      await expect(exchangeV2Proxy.connect(bob).renounceOwnership())
+        .to.be.revertedWithCustomError(exchangeV2Proxy, "NotWhitelisted")
+        .withArgs(bob.address);
     });
 
     it("should renounce ownership by a whitelisted owner", async () => {

@@ -12,8 +12,9 @@ import "../interfaces/IContractsRegistry.sol";
 contract ContractsRegistryProxy is IContractsRegistryProxy, Ownable {
     using Address for address;
 
-    address public securitizeRegistryProxy;
-    address public contractsRegistry;
+    address public override securitizeRegistryProxy;
+
+    address public override contractsRegistry;
 
     modifier onlyContract(address addr) {
         require(

@@ -9,4 +9,8 @@ interface IContractsRegistryProxy {
         external;
 
     function isWhitelistedContract(address addr) external view returns (bool);
+
+    function securitizeRegistryProxy() external view returns (address);
+
+    function contractsRegistry() external view returns (address);
 }

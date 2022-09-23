@@ -4,6 +4,9 @@ pragma solidity ^0.8.0;
 
 pragma abicoder v2;
 
+import "../../securitize/interfaces/IContractsRegistryProxy.sol";
+import "../../securitize/interfaces/IContractsRegistry.sol";
+
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 
 import "../../securitize/WhitelistableUpgradeable.sol";
@@ -66,6 +69,10 @@ contract ERC1155BridgeTowerFactoryC2 is
 
         token.transferOwnership(_msgSender());
 
+        IContractsRegistry(
+            IContractsRegistryProxy(contractsRegistryProxy).contractsRegistry()
+        ).addContract(beaconProxy);
+
         emit CreateERC1155BridgeTowerProxy(_msgSender(), beaconProxy);
 
         return beaconProxy;
@@ -96,6 +103,10 @@ contract ERC1155BridgeTowerFactoryC2 is
         ERC1155BridgeTower token = ERC1155BridgeTower(address(beaconProxy));
 
         token.transferOwnership(_msgSender());
+
+        IContractsRegistry(
+            IContractsRegistryProxy(contractsRegistryProxy).contractsRegistry()
+        ).addContract(beaconProxy);
 
         emit CreateERC1155BridgeTowerUserProxy(_msgSender(), beaconProxy);
 

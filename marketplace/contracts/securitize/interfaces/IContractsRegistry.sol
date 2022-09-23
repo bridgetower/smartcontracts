@@ -10,5 +10,13 @@ interface IContractsRegistry {
     function setSecuritizeRegistryProxy(address newSecuritizeRegistryProxy)
         external;
 
+    function setERC1155BridgeTowerFactoryC2(
+        address newERC1155BridgeTowerFactoryC2
+    ) external;
+
     function isWhitelisted(address addr) external view returns (bool);
+
+    function securitizeRegistryProxy() external view returns (address);
+
+    function erc1155BridgeTowerFactoryC2() external view returns (address);
 }

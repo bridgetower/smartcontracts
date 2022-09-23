@@ -358,6 +358,15 @@ async function main() {
   tx = await contractsRegistry.addContract(erc1155BridgeTowerFactoryC2.address);
 
   await tx.wait();
+
+  /**
+   * Set the ERC1155BridgeTowerFactoryC2 address inside of the ContractsRegistry
+   */
+  tx = await contractsRegistry.setERC1155BridgeTowerFactoryC2(
+    erc1155BridgeTowerFactoryC2.address
+  );
+
+  await tx.wait();
 }
 
 main().catch((error) => {

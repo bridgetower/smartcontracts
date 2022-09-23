@@ -4,15 +4,11 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { ContractFactory, Contract, BigNumber } from "ethers";
 
-import { solidity } from "ethereum-waffle";
-
-import chai, { expect } from "chai";
-
 import { ethers } from "hardhat";
 
-const { constants } = require("@openzeppelin/test-helpers");
+import { expect } from "chai";
 
-chai.use(solidity);
+const { constants } = require("@openzeppelin/test-helpers");
 
 describe("ERC1155BridgeTowerFactoryC2", () => {
   let alice: SignerWithAddress;
@@ -117,6 +113,10 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
     await contractsRegistry.addContract(erc1155BridgeTowerProxy.address);
     await contractsRegistry.addContract(erc1155BridgeTowerBeacon.address);
     await contractsRegistry.addContract(erc1155BridgeTowerFactoryC2.address);
+
+    await contractsRegistry.setERC1155BridgeTowerFactoryC2(
+      erc1155BridgeTowerFactoryC2.address
+    );
   });
 
   describe("PartnerAccessControl", () => {
@@ -125,7 +125,12 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
         await securitizeRegistry.connect(alice).removeWallet(alice.address);
         await expect(
           erc1155BridgeTowerFactoryC2.connect(alice).addPartner(alice.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerFactoryC2,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should fail if not an owner is trying to add a new partner", async () => {
@@ -182,7 +187,12 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
           erc1155BridgeTowerFactoryC2
             .connect(alice)
             .removePartner(alice.address)
-        ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+        )
+          .to.be.revertedWithCustomError(
+            erc1155BridgeTowerFactoryC2,
+            "NotWhitelisted"
+          )
+          .withArgs(alice.address);
       });
 
       it("should fail if not an owner is trying to remove a partner", async () => {
@@ -241,7 +251,12 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
       await securitizeRegistry.connect(alice).removeWallet(alice.address);
       await expect(
         erc1155BridgeTowerFactoryC2.connect(alice).addPartner(carol.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155BridgeTowerFactoryC2,
+          "NotWhitelisted"
+        )
+        .withArgs(alice.address);
     });
 
     it("should add a new partner by a whitelisted owner", async () => {
@@ -269,7 +284,12 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
       await securitizeRegistry.connect(alice).removeWallet(alice.address);
       await expect(
         erc1155BridgeTowerFactoryC2.connect(alice).removePartner(carol.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155BridgeTowerFactoryC2,
+          "NotWhitelisted"
+        )
+        .withArgs(alice.address);
     });
 
     it("should remove a partner by a whitelisted owner", async () => {
@@ -328,7 +348,12 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
           .functions[
             "createToken(string,string,string,string,uint256,uint256)"
           ](name, symbol, baseURI, contractURI, lockPeriod, salt)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155BridgeTowerFactoryC2,
+          "NotWhitelisted"
+        )
+        .withArgs(alice.address);
     });
 
     it("should create a new token by a whitelisted partner", async () => {
@@ -369,6 +394,11 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
       expect(await erc1155BridgeTowerProxy.connect(alice).owner()).to.be.equal(
         alice.address
       );
+      expect(
+        await contractsRegistry
+          .connect(alice)
+          .isWhitelisted(erc1155BridgeTowerProxy.address)
+      ).to.be.equal(true);
     });
   });
 
@@ -413,7 +443,12 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
           .functions[
             "createToken(string,string,string,string,address[],uint256,uint256)"
           ](name, symbol, baseURI, contractURI, operators, lockPeriod, salt)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155BridgeTowerFactoryC2,
+          "NotWhitelisted"
+        )
+        .withArgs(alice.address);
     });
 
     it("should create a new token by a whitelisted partner", async () => {
@@ -453,6 +488,11 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
       expect(await erc1155BridgeTowerProxy.connect(alice).owner()).to.be.equal(
         alice.address
       );
+      expect(
+        await contractsRegistry
+          .connect(alice)
+          .isWhitelisted(erc1155BridgeTowerProxy.address)
+      ).to.be.equal(true);
     });
   });
 
@@ -463,7 +503,12 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
         erc1155BridgeTowerFactoryC2
           .connect(alice)
           .transferOwnership(bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155BridgeTowerFactoryC2,
+          "NotWhitelisted"
+        )
+        .withArgs(alice.address);
     });
 
     it("should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user", async () => {
@@ -472,7 +517,12 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
         erc1155BridgeTowerFactoryC2
           .connect(alice)
           .transferOwnership(carol.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155BridgeTowerFactoryC2,
+          "NotWhitelisted"
+        )
+        .withArgs(carol.address);
     });
 
     it("should transfer ownership", async () => {
@@ -493,9 +543,12 @@ describe("ERC1155BridgeTowerFactoryC2", () => {
   describe("renounceOwnership", () => {
     it("should fail if not a whitelisted owner is trying to renounce ownership", async () => {
       await securitizeRegistry.connect(alice).removeWallet(bob.address);
-      await expect(
-        erc1155BridgeTowerFactoryC2.connect(bob).renounceOwnership()
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      await expect(erc1155BridgeTowerFactoryC2.connect(bob).renounceOwnership())
+        .to.be.revertedWithCustomError(
+          erc1155BridgeTowerFactoryC2,
+          "NotWhitelisted"
+        )
+        .withArgs(bob.address);
     });
 
     it("should renounce ownership by a whitelisted owner", async () => {

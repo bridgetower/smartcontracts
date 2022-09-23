@@ -7,15 +7,11 @@ import { ContractFactory, Contract, BigNumber } from "ethers";
 import { generateTokenID } from "../utils/helpers";
 import { MintERC1155Data } from "../utils/types";
 
-import { solidity } from "ethereum-waffle";
-
 import { ethers, upgrades } from "hardhat";
 
-import chai, { expect } from "chai";
+import { expect } from "chai";
 
 const { constants } = require("@openzeppelin/test-helpers");
-
-chai.use(solidity);
 
 describe("TransferProxy", () => {
   let alice: SignerWithAddress;
@@ -132,9 +128,9 @@ describe("TransferProxy", () => {
 
   describe("addOperator", () => {
     it("should fail if not whitelisted wallet is trying to add an operator", async () => {
-      await expect(
-        transferProxy.connect(alice).addOperator(bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      await expect(transferProxy.connect(alice).addOperator(bob.address))
+        .to.be.revertedWithCustomError(transferProxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should add an operator", async () => {
@@ -145,9 +141,9 @@ describe("TransferProxy", () => {
 
   describe("removeOperator", () => {
     it("should fail if not whitelisted wallet is trying to remove an operator", async () => {
-      await expect(
-        transferProxy.connect(bob).removeOperator(bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      await expect(transferProxy.connect(bob).removeOperator(bob.address))
+        .to.be.revertedWithCustomError(transferProxy, "NotWhitelisted")
+        .withArgs(bob.address);
     });
 
     it("should remove an operator", async () => {
@@ -167,7 +163,9 @@ describe("TransferProxy", () => {
             bob.address,
             BigNumber.from(0)
           )
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(transferProxy, "NotWhitelisted")
+        .withArgs(bob.address);
     });
 
     it("should fail if FROM is not a whitelisted wallet", async () => {
@@ -181,7 +179,9 @@ describe("TransferProxy", () => {
             alice.address,
             BigNumber.from(0)
           )
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(transferProxy, "NotWhitelisted")
+        .withArgs(bob.address);
     });
 
     it("should fail if TO is not a whitelisted wallet", async () => {
@@ -194,7 +194,9 @@ describe("TransferProxy", () => {
             bob.address,
             BigNumber.from(0)
           )
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(transferProxy, "NotWhitelisted")
+        .withArgs(bob.address);
     });
 
     it("should transfer token by a whitelisted operator", async () => {
@@ -241,7 +243,9 @@ describe("TransferProxy", () => {
             BigNumber.from(1),
             constants.ZERO_ADDRESS
           )
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(transferProxy, "NotWhitelisted")
+        .withArgs(bob.address);
     });
 
     it("should fail if FROM is not a whitelisted wallet", async () => {
@@ -256,7 +260,9 @@ describe("TransferProxy", () => {
             BigNumber.from(1),
             constants.ZERO_ADDRESS
           )
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(transferProxy, "NotWhitelisted")
+        .withArgs(bob.address);
     });
 
     it("should fail if TO is not a whitelisted wallet", async () => {
@@ -271,7 +277,9 @@ describe("TransferProxy", () => {
             BigNumber.from(1),
             constants.ZERO_ADDRESS
           )
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(transferProxy, "NotWhitelisted")
+        .withArgs(bob.address);
     });
 
     it("should transfer token by a whitelisted operator", async () => {
@@ -342,16 +350,18 @@ describe("TransferProxy", () => {
   describe("transferOwnership", () => {
     it("should fail if not a whitelisted owner is trying to transfer ownership", async () => {
       await securitizeRegistry.connect(alice).removeWallet(alice.address);
-      await expect(
-        transferProxy.connect(alice).transferOwnership(bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      await expect(transferProxy.connect(alice).transferOwnership(bob.address))
+        .to.be.revertedWithCustomError(transferProxy, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user", async () => {
       await securitizeRegistry.connect(alice).addWallet(alice.address);
       await expect(
         transferProxy.connect(alice).transferOwnership(carol.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(transferProxy, "NotWhitelisted")
+        .withArgs(carol.address);
     });
 
     it("should transfer ownership", async () => {
@@ -370,9 +380,9 @@ describe("TransferProxy", () => {
   describe("renounceOwnership", () => {
     it("should fail if not a whitelisted owner is trying to renounce ownership", async () => {
       await securitizeRegistry.connect(alice).removeWallet(bob.address);
-      await expect(
-        transferProxy.connect(bob).renounceOwnership()
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      await expect(transferProxy.connect(bob).renounceOwnership())
+        .to.be.revertedWithCustomError(transferProxy, "NotWhitelisted")
+        .withArgs(bob.address);
     });
 
     it("should renounce ownership by a whitelisted owner", async () => {

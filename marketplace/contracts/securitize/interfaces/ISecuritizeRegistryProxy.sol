@@ -6,4 +6,6 @@ interface ISecuritizeRegistryProxy {
     function setSecuritizeRegistry(address newSecuritizeRegistry) external;
 
     function isWhitelistedWallet(address wallet) external view returns (bool);
+
+    function securitizeRegistry() external view returns (address);
 }

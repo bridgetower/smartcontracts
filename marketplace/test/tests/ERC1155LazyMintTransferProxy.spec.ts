@@ -9,15 +9,11 @@ import { ContractFactory, Contract, BigNumber } from "ethers";
 
 import { AbiCoder } from "ethers/lib/utils";
 
-import { solidity } from "ethereum-waffle";
-
 import { ethers, upgrades } from "hardhat";
 
-import chai, { expect } from "chai";
+import { expect } from "chai";
 
 const { constants } = require("@openzeppelin/test-helpers");
-
-chai.use(solidity);
 
 describe("ERC1155LazyMintTransferProxy", () => {
   let alice: SignerWithAddress;
@@ -116,7 +112,12 @@ describe("ERC1155LazyMintTransferProxy", () => {
     it("should fail if not whitelisted wallet is trying to add an operator", async () => {
       await expect(
         erc1155LazyMintTransferProxy.connect(alice).addOperator(bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155LazyMintTransferProxy,
+          "NotWhitelisted"
+        )
+        .withArgs(alice.address);
     });
 
     it("should add an operator", async () => {
@@ -131,7 +132,12 @@ describe("ERC1155LazyMintTransferProxy", () => {
     it("should fail if not whitelisted wallet is trying to remove an operator", async () => {
       await expect(
         erc1155LazyMintTransferProxy.connect(bob).removeOperator(bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155LazyMintTransferProxy,
+          "NotWhitelisted"
+        )
+        .withArgs(bob.address);
     });
 
     it("should remove an operator", async () => {
@@ -158,7 +164,12 @@ describe("ERC1155LazyMintTransferProxy", () => {
         erc1155LazyMintTransferProxy
           .connect(bob)
           .transfer(asset, alice.address, bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155LazyMintTransferProxy,
+          "NotWhitelisted"
+        )
+        .withArgs(bob.address);
     });
 
     it("should fail if FROM is not a whitelisted wallet", async () => {
@@ -177,7 +188,12 @@ describe("ERC1155LazyMintTransferProxy", () => {
         erc1155LazyMintTransferProxy
           .connect(alice)
           .transfer(asset, bob.address, alice.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155LazyMintTransferProxy,
+          "NotWhitelisted"
+        )
+        .withArgs(bob.address);
     });
 
     it("should fail if TO is not a whitelisted wallet", async () => {
@@ -193,7 +209,12 @@ describe("ERC1155LazyMintTransferProxy", () => {
         erc1155LazyMintTransferProxy
           .connect(alice)
           .transfer(asset, alice.address, bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155LazyMintTransferProxy,
+          "NotWhitelisted"
+        )
+        .withArgs(bob.address);
     });
 
     it("should transfer token by a whitelisted operator", async () => {
@@ -290,7 +311,12 @@ describe("ERC1155LazyMintTransferProxy", () => {
         erc1155LazyMintTransferProxy
           .connect(alice)
           .transferOwnership(bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155LazyMintTransferProxy,
+          "NotWhitelisted"
+        )
+        .withArgs(alice.address);
     });
 
     it("should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user", async () => {
@@ -299,7 +325,12 @@ describe("ERC1155LazyMintTransferProxy", () => {
         erc1155LazyMintTransferProxy
           .connect(alice)
           .transferOwnership(carol.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155LazyMintTransferProxy,
+          "NotWhitelisted"
+        )
+        .withArgs(carol.address);
     });
 
     it("should transfer ownership", async () => {
@@ -322,7 +353,12 @@ describe("ERC1155LazyMintTransferProxy", () => {
       await securitizeRegistry.connect(alice).removeWallet(bob.address);
       await expect(
         erc1155LazyMintTransferProxy.connect(bob).renounceOwnership()
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(
+          erc1155LazyMintTransferProxy,
+          "NotWhitelisted"
+        )
+        .withArgs(bob.address);
     });
 
     it("should renounce ownership by a whitelisted owner", async () => {

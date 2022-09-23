@@ -79,7 +79,9 @@ describe("ContractsRegistry", () => {
         contractsRegistry
           .connect(bob)
           .addContract(testContractsRegistry.address)
-      ).to.be.revertedWith("Ownable: caller is not the owner");
+      ).to.be.revertedWith(
+        "ContractsRegistry: caller is not the owner nor the factory"
+      );
     });
 
     it("should fail if the owner is trying to add not a contract to the whitelist", async () => {
@@ -186,6 +188,48 @@ describe("ContractsRegistry", () => {
 
       expect(
         await contractsRegistry.connect(alice).securitizeRegistryProxy()
+      ).to.be.equal(securitizeRegistryProxy.address);
+    });
+  });
+
+  describe("setERC1155BridgeTowerFactoryC2", () => {
+    it("should fail if not a whitelisted owner is trying to set a new ERC-1155 BridgeTower factory C2", async () => {
+      await securitizeRegistry.connect(alice).removeWallet(alice.address);
+      await expect(
+        contractsRegistry
+          .connect(alice)
+          .setERC1155BridgeTowerFactoryC2(alice.address)
+      ).to.be.revertedWith("ContractsRegistry: wallet is not whitelisted");
+    });
+
+    it("should fail if not an owner is trying to set a new ERC-1155 BridgeTower factory C2", async () => {
+      await expect(
+        contractsRegistry
+          .connect(bob)
+          .setERC1155BridgeTowerFactoryC2(alice.address)
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+    });
+
+    it("should fail if a new ERC-1155 BridgeTower factory C2 is not a contract", async () => {
+      await securitizeRegistry.connect(alice).addWallet(alice.address);
+      await expect(
+        contractsRegistry
+          .connect(alice)
+          .setERC1155BridgeTowerFactoryC2(alice.address)
+      ).to.be.revertedWith("ContractsRegistry: not contract address");
+    });
+
+    it("should set a new ERC-1155 BridgeTower factory C2 by a whitelisted owner", async () => {
+      expect(
+        await contractsRegistry.connect(alice).erc1155BridgeTowerFactoryC2()
+      ).to.be.equal(constants.ZERO_ADDRESS);
+
+      await contractsRegistry
+        .connect(alice)
+        .setERC1155BridgeTowerFactoryC2(securitizeRegistryProxy.address);
+
+      expect(
+        await contractsRegistry.connect(alice).erc1155BridgeTowerFactoryC2()
       ).to.be.equal(securitizeRegistryProxy.address);
     });
   });

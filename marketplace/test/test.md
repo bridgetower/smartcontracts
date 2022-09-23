@@ -32,13 +32,20 @@
    - ✅ should fail if a new securitize registry proxy is not a contract;
    - ✅ should set a new securitize registry proxy by a whitelisted owner.
 
-6. `transferOwnership`:
+6. `setERC1155BridgeTowerFactoryC2`:
+
+   - ✅ should fail if not a whitelisted owner is trying to set a new ERC-1155 BridgeTower factory C2;
+   - ✅ should fail if not an owner is trying to set a new ERC-1155 BridgeTower factory C2;
+   - ✅ should fail if a new ERC-1155 BridgeTower factory C2 is not a contract;
+   - ✅ should set a new ERC-1155 BridgeTower factory C2 by a whitelisted owner.
+
+7. `transferOwnership`:
 
    - ✅ should fail if not a whitelisted owner is trying to transfer ownership;
    - ✅ should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user;
    - ✅ should transfer ownership.
 
-7. `renounceOwnership`:
+8. `renounceOwnership`:
    - ✅ should fail if not a whitelisted owner is trying to renounce ownership;
    - ✅ should renounce ownership by a whitelisted owner.
 

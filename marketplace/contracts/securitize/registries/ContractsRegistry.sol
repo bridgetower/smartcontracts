@@ -13,7 +13,9 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
 
     mapping(address => bool) private _contractToWhitelisted;
 
-    address public securitizeRegistryProxy;
+    address public override securitizeRegistryProxy;
+
+    address public override erc1155BridgeTowerFactoryC2;
 
     modifier onlyContract(address addr) {
         require(addr.isContract(), "ContractsRegistry: not contract address");
@@ -29,6 +31,24 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
         _;
     }
 
+    modifier onlyWhitelistedWalletOrContract(address addr) {
+        require(
+            ISecuritizeRegistryProxy(securitizeRegistryProxy)
+                .isWhitelistedWallet(addr) || isWhitelisted(addr),
+            "ContractsRegistry: wallet is not whitelisted"
+        );
+        _;
+    }
+
+    modifier onlyOwnerOrFactory(address addr) {
+        require(
+            _msgSender() == owner() ||
+                _msgSender() == erc1155BridgeTowerFactoryC2,
+            "ContractsRegistry: caller is not the owner nor the factory"
+        );
+        _;
+    }
+
     constructor(address initialSecuritizeRegistryProxy)
         onlyContract(initialSecuritizeRegistryProxy)
     {
@@ -38,8 +58,8 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
     function addContract(address addr)
         public
         override
-        onlyWhitelistedWallet(_msgSender())
-        onlyOwner
+        onlyWhitelistedWalletOrContract(_msgSender())
+        onlyOwnerOrFactory(_msgSender())
         onlyContract(addr)
     {
         _contractToWhitelisted[addr] = true;
@@ -62,6 +82,18 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
         onlyContract(newSecuritizeRegistryProxy)
     {
         securitizeRegistryProxy = newSecuritizeRegistryProxy;
+    }
+
+    function setERC1155BridgeTowerFactoryC2(
+        address newERC1155BridgeTowerFactoryC2
+    )
+        public
+        override
+        onlyWhitelistedWallet(_msgSender())
+        onlyOwner
+        onlyContract(newERC1155BridgeTowerFactoryC2)
+    {
+        erc1155BridgeTowerFactoryC2 = newERC1155BridgeTowerFactoryC2;
     }
 
     function transferOwnership(address newOwner)

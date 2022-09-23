@@ -11,7 +11,7 @@ import "../interfaces/ISecuritizeRegistry.sol";
 contract SecuritizeRegistryProxy is ISecuritizeRegistryProxy, Ownable {
     using Address for address;
 
-    address public securitizeRegistry;
+    address public override securitizeRegistry;
 
     modifier onlyContract(address addr) {
         require(

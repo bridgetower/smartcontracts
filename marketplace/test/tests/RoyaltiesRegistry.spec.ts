@@ -4,17 +4,13 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { ContractFactory, Contract, BigNumber } from "ethers";
 
-import { solidity } from "ethereum-waffle";
-
 import { Part } from "../utils/types";
-
-import chai, { expect } from "chai";
 
 import { ethers } from "hardhat";
 
-const { constants } = require("@openzeppelin/test-helpers");
+import { expect } from "chai";
 
-chai.use(solidity);
+const { constants } = require("@openzeppelin/test-helpers");
 
 describe("RoyaltiesRegistry", () => {
   let alice: SignerWithAddress;
@@ -94,7 +90,9 @@ describe("RoyaltiesRegistry", () => {
         royaltiesRegistry
           .connect(alice)
           .setProviderByToken(erc721Mock.address, bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(royaltiesRegistry, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to set provider by token", async () => {
@@ -121,7 +119,9 @@ describe("RoyaltiesRegistry", () => {
         royaltiesRegistry
           .connect(alice)
           .forceSetRoyaltiesType(erc721Mock.address, BigNumber.from(4))
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(royaltiesRegistry, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to force set royalties type", async () => {
@@ -145,7 +145,9 @@ describe("RoyaltiesRegistry", () => {
       await securitizeRegistry.connect(alice).removeWallet(alice.address);
       await expect(
         royaltiesRegistry.connect(alice).clearRoyaltiesType(erc721Mock.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(royaltiesRegistry, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to clear royalties type", async () => {
@@ -176,7 +178,9 @@ describe("RoyaltiesRegistry", () => {
         royaltiesRegistry
           .connect(alice)
           .setRoyaltiesByToken(erc721Mock.address, royalties)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(royaltiesRegistry, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if not owner is trying to set royalties by token", async () => {
@@ -216,7 +220,9 @@ describe("RoyaltiesRegistry", () => {
         royaltiesRegistry
           .connect(alice)
           .getRoyalties(erc721Mock.address, BigNumber.from(1))
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(royaltiesRegistry, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should get royalties by a whitelisted wallet", async () => {
@@ -232,14 +238,18 @@ describe("RoyaltiesRegistry", () => {
       await securitizeRegistry.connect(alice).removeWallet(alice.address);
       await expect(
         royaltiesRegistry.connect(alice).transferOwnership(bob.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(royaltiesRegistry, "NotWhitelisted")
+        .withArgs(alice.address);
     });
 
     it("should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user", async () => {
       await securitizeRegistry.connect(alice).addWallet(alice.address);
       await expect(
         royaltiesRegistry.connect(alice).transferOwnership(carol.address)
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      )
+        .to.be.revertedWithCustomError(royaltiesRegistry, "NotWhitelisted")
+        .withArgs(carol.address);
     });
 
     it("should transfer ownership", async () => {
@@ -258,9 +268,9 @@ describe("RoyaltiesRegistry", () => {
   describe("renounceOwnership", () => {
     it("should fail if not a whitelisted owner is trying to renounce ownership", async () => {
       await securitizeRegistry.connect(alice).removeWallet(bob.address);
-      await expect(
-        royaltiesRegistry.connect(bob).renounceOwnership()
-      ).to.be.revertedWith("Whitelistable: address is not whitelisted");
+      await expect(royaltiesRegistry.connect(bob).renounceOwnership())
+        .to.be.revertedWithCustomError(royaltiesRegistry, "NotWhitelisted")
+        .withArgs(bob.address);
     });
 
     it("should renounce ownership by a whitelisted owner", async () => {
