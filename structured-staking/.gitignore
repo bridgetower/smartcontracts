@@ -1,0 +1,14 @@
+typechain-types/
+.openzeppelin/
+node_modules/
+artifacts/
+typechain/
+coverage/
+build/
+cache/
+
+yarn-error.log
+coverage.json
+
+.Ds_Store
+.env
