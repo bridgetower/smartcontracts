@@ -29,8 +29,8 @@ const config: HardhatUserConfig = {
         process.env.FUJI_TESTNET_RPC ||
         "https://api.avax-test.network/ext/bc/C/rpc"
       ).trim(),
-      gasPrice: 30000000000,
-      gas: 3000000,
+      gasPrice: 25000000000,
+      gas: 8000000,
       chainId: 43113,
       accounts: [(process.env.PRIVATE_KEY || "").trim()],
     },
@@ -39,8 +39,8 @@ const config: HardhatUserConfig = {
         process.env.AVALANCHE_MAINNET_RPC ||
         "https://api.avax.network/ext/bc/C/rpc"
       ).trim(),
-      gasPrice: 30000000000,
-      gas: 3000000,
+      gasPrice: 25000000000,
+      gas: 8000000,
       chainId: 43114,
       accounts: [(process.env.PRIVATE_KEY || "").trim()],
     },

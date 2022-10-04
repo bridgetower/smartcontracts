@@ -113,7 +113,7 @@ async function main() {
 
   if (contractsRegistryProxyAddress != "") {
     contractsRegistryProxy = ContractsRegistryProxy.attach(
-      contractsRegistryAddress
+      contractsRegistryProxyAddress
     );
   } else {
     contractsRegistryProxy = await ContractsRegistryProxy.deploy(
@@ -225,7 +225,21 @@ async function main() {
 
   await tx.wait();
 
+  tx = await contractsRegistry.addContract(
+    await upgrades.erc1967.getImplementationAddress(beaconProxy.address)
+  );
+
+  await tx.wait();
+
   tx = await contractsRegistry.addContract(structuredStakingProxy.address);
+
+  await tx.wait();
+
+  tx = await contractsRegistry.addContract(
+    await upgrades.erc1967.getImplementationAddress(
+      structuredStakingProxy.address
+    )
+  );
 
   await tx.wait();
 }
