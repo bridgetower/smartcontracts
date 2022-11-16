@@ -4,11 +4,12 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
 import "../interfaces/ISecuritizeRegistryProxy.sol";
 import "../interfaces/ISecuritizeRegistry.sol";
 
-contract SecuritizeRegistryProxy is ISecuritizeRegistryProxy, Ownable {
+contract SecuritizeRegistryProxy is ISecuritizeRegistryProxy, Ownable, AccessControlEnumerable {
     using Address for address;
 
     address public override securitizeRegistry;
@@ -29,17 +30,31 @@ contract SecuritizeRegistryProxy is ISecuritizeRegistryProxy, Ownable {
         _;
     }
 
+    modifier onlyAdmin() {
+        require(
+            hasRole(DEFAULT_ADMIN_ROLE, _msgSender()),
+            "ContractsRegistryProxy: must have admin role"
+        );
+        _;
+    }
+
     constructor(address initialSecuritizeRegistry)
         onlyContract(initialSecuritizeRegistry)
     {
         securitizeRegistry = initialSecuritizeRegistry;
+
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    }
+
+    function addAdmin(address newAdmin) external onlyAdmin {
+        _setupRole(DEFAULT_ADMIN_ROLE, newAdmin);
     }
 
     function setSecuritizeRegistry(address newSecuritizeRegistry)
         public
         override
         onlyWhitelistedWallet(_msgSender())
-        onlyOwner
+        onlyAdmin
         onlyContract(newSecuritizeRegistry)
     {
         securitizeRegistry = newSecuritizeRegistry;

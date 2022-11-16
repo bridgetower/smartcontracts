@@ -4,12 +4,13 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
 import "../interfaces/ISecuritizeRegistryProxy.sol";
 import "../interfaces/IContractsRegistryProxy.sol";
 import "../interfaces/IContractsRegistry.sol";
 
-contract ContractsRegistryProxy is IContractsRegistryProxy, Ownable {
+contract ContractsRegistryProxy is IContractsRegistryProxy, Ownable, AccessControlEnumerable {
     using Address for address;
 
     address public override securitizeRegistryProxy;
@@ -33,6 +34,14 @@ contract ContractsRegistryProxy is IContractsRegistryProxy, Ownable {
         _;
     }
 
+    modifier onlyAdmin() {
+        require(
+            hasRole(DEFAULT_ADMIN_ROLE, _msgSender()),
+            "ContractsRegistryProxy: must have admin role"
+        );
+        _;
+    }
+
     constructor(
         address initialSecuritizeRegistryProxy,
         address initialContractsRegistry
@@ -42,13 +51,19 @@ contract ContractsRegistryProxy is IContractsRegistryProxy, Ownable {
     {
         securitizeRegistryProxy = initialSecuritizeRegistryProxy;
         contractsRegistry = initialContractsRegistry;
+
+        _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
+    }
+
+    function addAdmin(address newAdmin) external onlyAdmin {
+        _setupRole(DEFAULT_ADMIN_ROLE, newAdmin);
     }
 
     function setContractsRegistry(address newContractsRegistry)
         public
         override
         onlyWhitelistedWallet(_msgSender())
-        onlyOwner
+        onlyAdmin
         onlyContract(newContractsRegistry)
     {
         contractsRegistry = newContractsRegistry;
@@ -58,7 +73,7 @@ contract ContractsRegistryProxy is IContractsRegistryProxy, Ownable {
         public
         override
         onlyWhitelistedWallet(_msgSender())
-        onlyOwner
+        onlyAdmin
         onlyContract(newSecuritizeRegistryProxy)
     {
         securitizeRegistryProxy = newSecuritizeRegistryProxy;
