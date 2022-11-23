@@ -9,7 +9,7 @@ import "./LibPart.sol";
 interface IRoyalties {
     event RoyaltiesSet(uint256 tokenId, LibPart.Part[] royalties);
 
-    function getBridgeTowerRoyalties(uint256 id)
+    function getBridgeTowerV2Royalties(uint256 id)
         external
         view
         returns (LibPart.Part[] memory);

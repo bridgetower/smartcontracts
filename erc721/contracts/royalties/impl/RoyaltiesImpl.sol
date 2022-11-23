@@ -13,7 +13,7 @@ import "../IRoyalties.sol";
 import "../IERC2981.sol";
 
 contract RoyaltiesImpl is AbstractRoyalties, IRoyalties, IERC2981 {
-    function getBridgeTowerRoyalties(uint256 id)
+    function getBridgeTowerV2Royalties(uint256 id)
         external
         view
         override
