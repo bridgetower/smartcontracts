@@ -32,7 +32,11 @@ abstract contract ERC1155Lockable is Initializable {
         internal
         initializer
     {
-        lockPeriod = initialLockPeriod;
+        _setLockPeriod(initialLockPeriod);
+    }
+
+    function _setLockPeriod(uint256 newLockPeriod) internal {
+        lockPeriod = newLockPeriod;
     }
 
     function lock(

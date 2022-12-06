@@ -230,6 +230,11 @@ contract ERC1155BridgeTower is
         super.safeBatchTransferFrom(from, to, ids, amounts, data);
     }
 
+    function setLockPeriod(uint256 newLockPeriod) external onlyOwner {
+        onlyWhitelistedAddress(_msgSender());
+        _setLockPeriod(newLockPeriod);   
+    }
+
     function unlock(address user, uint256 id) public override(ERC1155Lockable) {
         onlyWhitelistedAddress(_msgSender());
         onlyWhitelistedAddress(user);
