@@ -52,7 +52,7 @@ const config: HardhatUserConfig = {
       gasPrice: 30000000000,
       gas: 3000000,
       chainId: 43114,
-      accounts: [],
+      accounts: [process.env.PRIVATE_KEY || ""],
     },
   },
   gasReporter: {
