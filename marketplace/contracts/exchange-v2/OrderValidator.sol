@@ -26,6 +26,12 @@ abstract contract OrderValidator is
         __EIP712_init_unchained("Exchange", "2");
     }
 
+    /**
+        @dev validates order signature
+        @param order order object
+        @param signature order signature
+    */
+
     function validate(LibOrder.Order memory order, bytes memory signature)
         internal
         view

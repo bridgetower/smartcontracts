@@ -275,7 +275,7 @@
     - ✅ should finalize a staking pool by a whitelisted owner;
     - ✅ should fail if an owner is trying to finalize already finalized staking pool;
     - ✅ should transfer rewards back to a tx sender if no one staked into a staking pool;
-    - ✅ should calculate cumulative reward per stake in time of finalizing of a staking pool.
+    - ✅ should set rewards amount in time of finalizing of a staking pool.
 
 15. `getStakedByUserAmount`:
 
@@ -310,46 +310,50 @@
 
     - ✅ should return proper amount of earned by user tokens.
 
-22. `getAccountCumulativeRewardPerStake`:
+22. `getUserSharesAmount`:
 
-    - ✅ should return proper account cumulative reward per stake.
+    - ✅ should return proper user's shares amount.
 
-23. `securitizeRegistryProxy`:
+23. `isClaimedByUser`:
+
+    - ✅ should return proper is claimed value.
+
+24. `securitizeRegistryProxy`:
 
     - ✅ should return proper securitize registry proxy.
 
-24. `contractsRegistryProxy`:
+25. `contractsRegistryProxy`:
 
     - ✅ should return proper contracts registry proxy.
 
-25. `setSecuritizeRegistryProxy`:
+26. `setSecuritizeRegistryProxy`:
 
     - ✅ should fail if not an owner is trying to set a new securitize registry proxy;
     - ✅ should fail if not a whitelisted owner is trying to set a new securitize registry proxy;
     - ✅ should fail if a new securitize registry proxy is not a contract;
     - ✅ should set a new securitize registry proxy by a whitelisted owner.
 
-26. `setContractsRegistryProxy`:
+27. `setContractsRegistryProxy`:
 
     - ✅ should fail if not an owner is trying to set a new contracts registry proxy;
     - ✅ should fail if not a whitelisted owner is trying to set a new contracts registry proxy;
     - ✅ should fail if a new contracts registry proxy is not a contract;
     - ✅ should set a new contracts registry proxy by a whitelisted owner.
 
-27. `onlyWhitelistedAddress`:
+28. `onlyWhitelistedAddress`:
 
     - ✅ should not revert - 1;
     - ✅ should not revert - 2;
     - ✅ should revert - 1;
     - ✅ should revert - 2.
 
-28. `transferOwnership`:
+29. `transferOwnership`:
 
     - ✅ should fail if not a whitelisted owner is trying to transfer ownership;
     - ✅ should fail if a whitelisted owner is trying to transfer ownership to a non-whitelisted user;
     - ✅ should transfer ownership.
 
-29. `renounceOwnership`:
+30. `renounceOwnership`:
 
     - ✅ should fail if not a whitelisted owner is trying to renounce ownership;
     - ✅ should renounce ownership by a whitelisted owner.

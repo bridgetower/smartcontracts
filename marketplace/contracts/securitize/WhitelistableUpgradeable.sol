@@ -21,6 +21,10 @@ abstract contract WhitelistableUpgradeable is OwnableUpgradeable {
         _;
     }
 
+    /**
+        @dev Initialization method for contract. It can only be called once
+    */
+
     function __Whitelistable_init(
         address initialSecuritizeRegistryProxy,
         address initialContractsRegistryProxy
@@ -44,6 +48,12 @@ abstract contract WhitelistableUpgradeable is OwnableUpgradeable {
         contractsRegistryProxy = initialContractsRegistryProxy;
     }
 
+    /**
+        @dev Sets the securitize registry proxy. 
+        Proxy will always point to the securitize registry        
+        @param newSecuritizeRegistryProxy Proxy address
+    */
+
     function setSecuritizeRegistryProxy(address newSecuritizeRegistryProxy)
         external
         onlyOwner
@@ -54,6 +64,12 @@ abstract contract WhitelistableUpgradeable is OwnableUpgradeable {
         securitizeRegistryProxy = newSecuritizeRegistryProxy;
     }
 
+    /**
+        @dev Sets the contract registry proxy
+        Proxy will always point to the contract registry        
+        @param newContractsRegistryProxy Proxy address
+    */
+
     function setContractsRegistryProxy(address newContractsRegistryProxy)
         external
         onlyOwner
@@ -63,6 +79,13 @@ abstract contract WhitelistableUpgradeable is OwnableUpgradeable {
 
         contractsRegistryProxy = newContractsRegistryProxy;
     }
+
+    /**
+        @dev Checks if address is whitelisted either on securitize registry or contract registry.
+        This method is used in all marketplace calleable methods. 
+        If address is not whitelisted then the transaction will fail
+        @param addr address to check
+    */
 
     function onlyWhitelistedAddress(address addr) public view {
         if (

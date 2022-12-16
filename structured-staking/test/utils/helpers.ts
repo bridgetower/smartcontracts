@@ -37,13 +37,11 @@ export const restoreSnapshot = async (): Promise<void> => {
 };
 
 export const calculateClaimeableAmount = (
-  cumulativeRewardPerStake: BigNumber,
-  accountCumulativeRewardPerStake: BigNumber,
-  stakedBuUser: BigNumber
+  totalShares: BigNumber,
+  userShares: BigNumber,
+  rewardsAmount: BigNumber
 ): BigNumber => {
-  const amountOwnedPerToken: BigNumber = cumulativeRewardPerStake.sub(
-    accountCumulativeRewardPerStake
-  );
-
-  return stakedBuUser.mul(amountOwnedPerToken).div(PRECISION);
+  return rewardsAmount
+    .mul(userShares.mul(PRECISION).div(totalShares))
+    .div(PRECISION);
 };

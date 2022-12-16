@@ -44,6 +44,10 @@ const config: HardhatUserConfig = {
       chainId: 43114,
       accounts: [(process.env.PRIVATE_KEY || "").trim()],
     },
+    goerli: {
+      url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      accounts: [process.env.PRIVATE_KEY || ""],
+    },
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS ? true : false,
@@ -53,6 +57,7 @@ const config: HardhatUserConfig = {
     apiKey: {
       avalanche: (process.env.V_SNOWTRACE_API_KEY || "").trim(),
       avalancheFujiTestnet: (process.env.V_SNOWTRACE_API_KEY || "").trim(),
+      goerli: (process.env.V_ETHERSCAN_API_KEY || "").trim(),
     },
   },
 };

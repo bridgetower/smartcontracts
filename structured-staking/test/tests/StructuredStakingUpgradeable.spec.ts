@@ -282,12 +282,11 @@ describe("StructuredStakingUpgradeable", () => {
       expect(stakingPool.poolId).to.be.equal(expectedStakingPoolId);
       expect(stakingPool.totalStaked).to.be.equal(BigNumber.from(0));
       expect(stakingPool.stakingPeriodEnd).to.be.equal(stakingPeriodEnd);
-      expect(stakingPool.cumulativeRewardPerStake).to.be.equal(
-        BigNumber.from(0)
-      );
+      expect(stakingPool.totalShares).to.be.equal(BigNumber.from(0));
       expect(stakingPool.validationNodesProvider).to.be.equal(
         expectedValidationNodesProviderAddress
       );
+      expect(stakingPool.rewardsAmount).to.be.equal(BigNumber.from(0));
       expect(stakingPool.aggregator).to.be.equal(constants.ZERO_ADDRESS);
       expect(stakingPool.finalized).to.be.equal(false);
     });
@@ -419,12 +418,11 @@ describe("StructuredStakingUpgradeable", () => {
       expect(stakingPool.poolId).to.be.equal(stakingPoolId);
       expect(stakingPool.totalStaked).to.be.equal(BigNumber.from(0));
       expect(stakingPool.stakingPeriodEnd).to.be.greaterThan(BigNumber.from(0));
-      expect(stakingPool.cumulativeRewardPerStake).to.be.equal(
-        BigNumber.from(0)
-      );
+      expect(stakingPool.totalShares).to.be.equal(BigNumber.from(0));
       expect(stakingPool.validationNodesProvider).to.not.be.equal(
         constants.ZERO_ADDRESS
       );
+      expect(stakingPool.rewardsAmount).to.be.equal(BigNumber.from(0));
       expect(stakingPool.aggregator).to.not.be.equal(constants.ZERO_ADDRESS);
       expect(stakingPool.finalized).to.be.equal(false);
     });
@@ -438,12 +436,11 @@ describe("StructuredStakingUpgradeable", () => {
       expect(stakingPool.poolId).to.be.equal(stakingPoolId);
       expect(stakingPool.totalStaked).to.be.equal(BigNumber.from(0));
       expect(stakingPool.stakingPeriodEnd).to.be.greaterThan(BigNumber.from(0));
-      expect(stakingPool.cumulativeRewardPerStake).to.be.equal(
-        BigNumber.from(0)
-      );
+      expect(stakingPool.totalShares).to.be.equal(BigNumber.from(0));
       expect(stakingPool.validationNodesProvider).to.not.be.equal(
         constants.ZERO_ADDRESS
       );
+      expect(stakingPool.rewardsAmount).to.be.equal(BigNumber.from(0));
       expect(stakingPool.aggregator).to.be.equal(constants.ZERO_ADDRESS);
       expect(stakingPool.finalized).to.be.equal(false);
     });
@@ -588,23 +585,25 @@ describe("StructuredStakingUpgradeable", () => {
       const stakedByUserAmount: BigNumber = await structuredStakingProxy
         .connect(alice)
         .getStakedByUserAmount(stakingPoolId, alice.address);
+      const userSharesAmount: BigNumber = await structuredStakingProxy
+        .connect(alice)
+        .getUserSharesAmount(stakingPoolId, alice.address);
+      const shares: BigNumber = amountToStake.mul(
+        stakingPool.stakingPeriodEnd.sub(await getPreviousBlockTimestamp())
+      );
 
       expect(stakingPool.totalStaked).to.be.equal(amountToStake);
+      expect(stakingPool.totalShares).to.be.equal(shares);
       expect(stakedByUserAmount).to.be.equal(amountToStake);
-      expect(
-        await structuredStakingProxy
-          .connect(alice)
-          .getAccountCumulativeRewardPerStake(stakingPoolId, alice.address)
-      ).to.be.equal(
-        stakedByUserAmount.mul(
-          stakingPool.stakingPeriodEnd.sub(await getPreviousBlockTimestamp())
-        )
-      );
+      expect(userSharesAmount).to.be.equal(shares);
     });
 
     it("should stake by a whitelisted user - 2", async () => {
       const stakingPoolId: BigNumber = BigNumber.from(2);
       const amountToStake: BigNumber = BigNumber.from(500);
+      const prevStakingPool: StakingPool = await structuredStakingProxy
+        .connect(alice)
+        .stakingPools(stakingPoolId);
 
       await securitizeRegistry.connect(alice).addWallet(bob.address);
       await expect(
@@ -615,29 +614,35 @@ describe("StructuredStakingUpgradeable", () => {
         .to.emit(structuredStakingProxy, "Staked")
         .withArgs(stakingPoolId, bob.address, amountToStake);
 
-      const stakingPool: StakingPool = await structuredStakingProxy
+      const currStakingPool: StakingPool = await structuredStakingProxy
         .connect(alice)
         .stakingPools(stakingPoolId);
       const stakedByUserAmount: BigNumber = await structuredStakingProxy
         .connect(alice)
         .getStakedByUserAmount(stakingPoolId, bob.address);
-
-      expect(stakingPool.totalStaked).to.be.equal(amountToStake.add(100));
-      expect(stakedByUserAmount).to.be.equal(amountToStake);
-      expect(
-        await structuredStakingProxy
-          .connect(alice)
-          .getAccountCumulativeRewardPerStake(stakingPoolId, bob.address)
-      ).to.be.equal(
-        stakedByUserAmount.mul(
-          stakingPool.stakingPeriodEnd.sub(await getPreviousBlockTimestamp())
-        )
+      const userSharesAmount: BigNumber = await structuredStakingProxy
+        .connect(alice)
+        .getUserSharesAmount(stakingPoolId, bob.address);
+      const shares: BigNumber = amountToStake.mul(
+        currStakingPool.stakingPeriodEnd.sub(await getPreviousBlockTimestamp())
       );
+
+      expect(currStakingPool.totalStaked).to.be.equal(
+        prevStakingPool.totalStaked.add(amountToStake)
+      );
+      expect(currStakingPool.totalShares).to.be.equal(
+        prevStakingPool.totalShares.add(shares)
+      );
+      expect(stakedByUserAmount).to.be.equal(amountToStake);
+      expect(userSharesAmount).to.be.equal(shares);
     });
 
     it("should stake by a whitelisted user - 3", async () => {
       const stakingPoolId: BigNumber = BigNumber.from(2);
       const amountToStake: BigNumber = BigNumber.from(100);
+      const prevStakingPool: StakingPool = await structuredStakingProxy
+        .connect(alice)
+        .stakingPools(stakingPoolId);
 
       await securitizeRegistry.connect(alice).addWallet(carol.address);
       await expect(
@@ -648,24 +653,27 @@ describe("StructuredStakingUpgradeable", () => {
         .to.emit(structuredStakingProxy, "Staked")
         .withArgs(stakingPoolId, carol.address, amountToStake);
 
-      const stakingPool: StakingPool = await structuredStakingProxy
+      const currStakingPool: StakingPool = await structuredStakingProxy
         .connect(alice)
         .stakingPools(stakingPoolId);
       const stakedByUserAmount: BigNumber = await structuredStakingProxy
         .connect(alice)
         .getStakedByUserAmount(stakingPoolId, carol.address);
-
-      expect(stakingPool.totalStaked).to.be.equal(amountToStake.add(600));
-      expect(stakedByUserAmount).to.be.equal(amountToStake);
-      expect(
-        await structuredStakingProxy
-          .connect(alice)
-          .getAccountCumulativeRewardPerStake(stakingPoolId, carol.address)
-      ).to.be.equal(
-        stakedByUserAmount.mul(
-          stakingPool.stakingPeriodEnd.sub(await getPreviousBlockTimestamp())
-        )
+      const userSharesAmount: BigNumber = await structuredStakingProxy
+        .connect(alice)
+        .getUserSharesAmount(stakingPoolId, carol.address);
+      const shares: BigNumber = amountToStake.mul(
+        currStakingPool.stakingPeriodEnd.sub(await getPreviousBlockTimestamp())
       );
+
+      expect(currStakingPool.totalStaked).to.be.equal(
+        prevStakingPool.totalStaked.add(amountToStake)
+      );
+      expect(currStakingPool.totalShares).to.be.equal(
+        prevStakingPool.totalShares.add(shares)
+      );
+      expect(stakedByUserAmount).to.be.equal(amountToStake);
+      expect(userSharesAmount).to.be.equal(shares);
     });
 
     it("should mint NFTs to a user in time of stake in 1 to 1 proportion", async () => {
@@ -851,7 +859,7 @@ describe("StructuredStakingUpgradeable", () => {
       expect(currCentralBTBalance).to.be.equal(prevCentralBTBalance);
     });
 
-    it("should calculate cumulative reward per stake in time of finalizing of a staking pool", async () => {
+    it("should set rewards amount in time of finalizing of a staking pool", async () => {
       const stakingPoolId: BigNumber = BigNumber.from(2);
       const rewardsAmount: BigNumber = BigNumber.from(500);
 
@@ -877,9 +885,7 @@ describe("StructuredStakingUpgradeable", () => {
         .connect(alice)
         .stakingPools(stakingPoolId);
 
-      expect(currStakingPool.cumulativeRewardPerStake).to.be.equal(
-        rewardsAmount.mul(PRECISION).div(prevStakingPool.totalStaked)
-      );
+      expect(currStakingPool.rewardsAmount).to.be.equal(rewardsAmount);
     });
   });
 
@@ -991,11 +997,11 @@ describe("StructuredStakingUpgradeable", () => {
         .getEarnedByUserAmount(stakingPoolId, alice.address);
 
       const expectedClaimeableAmount: BigNumber = calculateClaimeableAmount(
-        prevStakingPool.cumulativeRewardPerStake,
+        prevStakingPool.totalShares,
         await structuredStakingProxy
           .connect(alice.address)
-          .getAccountCumulativeRewardPerStake(stakingPoolId, alice.address),
-        prevStakedByAlice
+          .getUserSharesAmount(stakingPoolId, alice.address),
+        prevStakingPool.rewardsAmount
       );
 
       await expect(structuredStakingProxy.connect(alice).claim(stakingPoolId))
@@ -1048,11 +1054,11 @@ describe("StructuredStakingUpgradeable", () => {
         await ethers.provider.getBalance(structuredStakingProxy.address);
 
       const claimeableAmount: BigNumber = calculateClaimeableAmount(
-        prevStakingPool.cumulativeRewardPerStake,
+        prevStakingPool.totalShares,
         await structuredStakingProxy
           .connect(alice.address)
-          .getAccountCumulativeRewardPerStake(stakingPoolId, carol.address),
-        prevStakedByCarol
+          .getUserSharesAmount(stakingPoolId, carol.address),
+        prevStakingPool.rewardsAmount
       );
 
       await securitizeRegistry.connect(alice).addWallet(carol.address);
@@ -1067,6 +1073,12 @@ describe("StructuredStakingUpgradeable", () => {
           .sub(prevStakedByCarol)
           .sub(claimeableAmount)
       );
+    });
+
+    it("should fail if an already claimed user is trying to claim one more time", async () => {
+      await expect(
+        structuredStakingProxy.connect(alice).claim(BigNumber.from(2))
+      ).to.be.revertedWith("Staking: user already claimed rewards");
     });
   });
 
@@ -1134,25 +1146,47 @@ describe("StructuredStakingUpgradeable", () => {
     });
   });
 
-  describe("getAccountCumulativeRewardPerStake", () => {
-    it("should return proper account cumulative reward per stake", async () => {
+  describe("getUserSharesAmount", () => {
+    it("should return proper user's shares amount", async () => {
       const stakingPoolId: BigNumber = BigNumber.from(2);
 
       expect(
         await structuredStakingProxy
           .connect(alice)
-          .getAccountCumulativeRewardPerStake(stakingPoolId, alice.address)
-      ).to.be.equal(BigNumber.from(51832400));
+          .getUserSharesAmount(stakingPoolId, alice.address)
+      ).to.be.equal(BigNumber.from(25916500));
       expect(
         await structuredStakingProxy
           .connect(alice)
-          .getAccountCumulativeRewardPerStake(stakingPoolId, bob.address)
+          .getUserSharesAmount(stakingPoolId, bob.address)
       ).to.be.equal(BigNumber.from(43195000));
       expect(
         await structuredStakingProxy
           .connect(alice)
-          .getAccountCumulativeRewardPerStake(stakingPoolId, carol.address)
+          .getUserSharesAmount(stakingPoolId, carol.address)
       ).to.be.equal(BigNumber.from(8638800));
+    });
+  });
+
+  describe("isClaimedByUser", () => {
+    it("should return proper is claimed value", async () => {
+      const stakingPoolId: BigNumber = BigNumber.from(2);
+
+      expect(
+        await structuredStakingProxy
+          .connect(alice)
+          .isClaimedByUser(stakingPoolId, alice.address)
+      ).to.be.equal(true);
+      expect(
+        await structuredStakingProxy
+          .connect(alice)
+          .isClaimedByUser(stakingPoolId, bob.address)
+      ).to.be.equal(true);
+      expect(
+        await structuredStakingProxy
+          .connect(alice)
+          .isClaimedByUser(stakingPoolId, carol.address)
+      ).to.be.equal(true);
     });
   });
 

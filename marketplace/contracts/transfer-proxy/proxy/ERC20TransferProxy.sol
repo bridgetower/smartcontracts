@@ -29,6 +29,16 @@ contract ERC20TransferProxy is
         );
     }
 
+    /**
+        @dev Transfer any ERC-20 tokens from a sender to a receiver.
+        This method is generally used by the marketplacew
+        
+        @param token Token address
+        @param from sender
+        @param to receiver
+        @param value Token amount
+    */ 
+
     function erc20safeTransferFrom(
         IERC20Upgradeable token,
         address from,
@@ -42,11 +52,27 @@ contract ERC20TransferProxy is
         token.safeTransferFrom(from, to, value);
     }
 
+    /**
+        @dev Adds an operator
+        An operator is able to call erc20safeTransferFrom
+        The marketplace contract is one operator
+
+        @param operator New operator
+    */
+
     function addOperator(address operator) public override {
         onlyWhitelistedAddress(_msgSender());
 
         super.addOperator(operator);
     }
+
+     /**
+        @dev Removes an operator
+        An operator is able to call erc20safeTransferFrom
+        The marketplace contract is one operator
+
+        @param operator operator to remove
+    */
 
     function removeOperator(address operator) public override {
         onlyWhitelistedAddress(_msgSender());
@@ -54,12 +80,23 @@ contract ERC20TransferProxy is
         super.removeOperator(operator);
     }
 
+    /**
+        @dev Transfers ownership
+        
+        @param newOwner New owner
+    */
+
     function transferOwnership(address newOwner) public override {
         onlyWhitelistedAddress(_msgSender());
         onlyWhitelistedAddress(newOwner);
 
         super.transferOwnership(newOwner);
     }
+
+    /**
+        @dev Renounces ownership. Meaning, there will be no owner.
+        Access only owner methods won't no longer be able to be called
+    */
 
     function renounceOwnership() public override {
         onlyWhitelistedAddress(_msgSender());

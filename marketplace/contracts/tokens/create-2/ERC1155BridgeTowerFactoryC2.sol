@@ -51,6 +51,16 @@ contract ERC1155BridgeTowerFactoryC2 is
         );
     }
 
+    /**
+        @dev Creates a ERC-1155 public collection.
+        @param _name Token name
+        @param _symbol Token symbol
+        @param baseURI Token base URI if any
+        @param contractURI Contract URI pointing to collection metadata
+        @param lockPeriod NFT Lock period in seconds
+        @param salt random unique number
+    */
+
     function createToken(
         string memory _name,
         string memory _symbol,
@@ -77,6 +87,18 @@ contract ERC1155BridgeTowerFactoryC2 is
 
         return beaconProxy;
     }
+    
+    /**
+        @dev Creates a ERC-1155 private collection.
+
+        @param _name Token name
+        @param _symbol Token symbol
+        @param baseURI Token base URI if any
+        @param contractURI Contract URI pointing to collection metadata
+        @param operators array of operators
+        @param lockPeriod NFT Lock period in seconds
+        @param salt random unique number
+    */
 
     function createToken(
         string memory _name,
@@ -113,11 +135,25 @@ contract ERC1155BridgeTowerFactoryC2 is
         return beaconProxy;
     }
 
+    /**
+        @dev Adds a partner. 
+        A partner is a wallet able to create ERC-1155 collections by calling createToken method
+        
+        @param partner New partner
+    */
+
     function addPartner(address partner) public override {
         onlyWhitelistedAddress(_msgSender());
 
         super.addPartner(partner);
     }
+
+    /**
+        @dev Removes a partner. 
+        A partner is a wallet able to create ERC-1155 collections by calling createToken method
+        
+        @param partner partner to remove
+    */
 
     function removePartner(address partner) public override {
         onlyWhitelistedAddress(_msgSender());
@@ -125,12 +161,23 @@ contract ERC1155BridgeTowerFactoryC2 is
         super.removePartner(partner);
     }
 
+    /**
+        @dev Transfers ownership
+        
+        @param newOwner New owner
+    */
+
     function transferOwnership(address newOwner) public override {
         onlyWhitelistedAddress(_msgSender());
         onlyWhitelistedAddress(newOwner);
 
         super.transferOwnership(newOwner);
     }
+
+    /**
+        @dev Renounces ownership. Meaning, there will be no owner.
+        Access only owner methods won't no longer be able to be called
+    */
 
     function renounceOwnership() public override {
         onlyWhitelistedAddress(_msgSender());

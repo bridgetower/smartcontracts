@@ -66,14 +66,21 @@ Also, you can deploy contracts to the Fuji testnet. To do this execute
 the next command in your command line (terminal):
 
 ```bash
-yarn deploy:testnet
+yarn deploy:fuji
 ```
 
-To deploy contracts to the mainnet execute the next command in your command
-line (terminal):
+To deploy contracts to the Goerli testnet execute the next command in your
+command line (terminal):
 
 ```bash
-yarn deploy
+yarn deploy:goerli
+```
+
+To deploy contracts to the Avalanche mainnet execute the next command in your
+command line (terminal):
+
+```bash
+yarn deploy:avalanche
 ```
 
 NOTE: don't forget to update your `.env` file.
@@ -88,13 +95,19 @@ To verify contracts deployed to the real network, update you `.env`
 files. After this execute the next comman in your command line (terminal):
 
 ```bash
-yarn verify:testnet
+yarn verify:fuji
 ```
 
-For the mainnet:
+For the Goerli testnet:
 
 ```bash
-yarn verify
+yarn verify:goerli
+```
+
+For the Avalanche mainnet:
+
+```bash
+yarn verify:avalanche
 ```
 
 NOTE: don't forget to update your `.env` file.
@@ -115,17 +128,23 @@ staking pool. To do this, update your `.env` file (`Launch pool parameters`
 section). After this execute the next comman in your command line (terminal):
 
 ```bash
-yarn launch-pool
+yarn launch-pool:avalanche
 ```
 
 A new staking pool will be launched on the `StructuredStakingProxy` contract in
 the mainnet. Also, a new `ValidationNodesProvideProxy` and `AggregatorProxy`
 will be deployed and configured.
 
-For the testnet:
+For the Fuji testnet:
 
 ```bash
-yarn launch-pool:testnet
+yarn launch-pool:fuji
+```
+
+For the Goerli testnet:
+
+```bash
+yarn launch-pool:goerli
 ```
 
 To launch a new staking pool in the sandbox (to test a script), execute the
@@ -148,7 +167,7 @@ staking pool after the end of the pool. To do this, update your `.env` file
 your command line (terminal):
 
 ```bash
-yarn finalize-pool
+yarn finalize-pool:avalanche
 ```
 
 The pool will be finalized and users will be able to claim staked tokens +
@@ -161,10 +180,16 @@ finalization of the pool: `TS + R + FEE`, where
 - R - rewards amount as mentioned in `.env` file;
 - FEE - fees to pay for the transaction.
 
-For the testnet:
+For the Fuji testnet:
 
 ```bash
-yarn finalize-pool:testnet
+yarn finalize-pool:fuji
+```
+
+For the Goerli testnet:
+
+```bash
+yarn finalize-pool:goerli
 ```
 
 To finalize a staking pool in the sandbox (to test a script), execute the next

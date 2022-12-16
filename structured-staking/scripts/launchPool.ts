@@ -2,6 +2,8 @@ import { ethers, upgrades } from "hardhat";
 
 import * as dotenv from "dotenv";
 
+import hre from "hardhat";
+
 import {
   ContractTransaction,
   ContractFactory,
@@ -77,6 +79,15 @@ async function main() {
   await aggregatorProxy.deployed();
 
   console.log("AggregatorProxy: ", aggregatorProxy.address);
+
+  // Verify AggregatorProxy
+  try {
+    await hre.run("verify:verify", {
+      address: aggregatorProxy.address,
+    });
+  } catch (err: any) {
+    console.error(err.message);
+  }
 
   tx = await structuredStakingProxy.setAggregator(
     poolId,

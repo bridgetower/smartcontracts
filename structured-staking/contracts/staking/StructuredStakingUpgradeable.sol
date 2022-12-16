@@ -28,14 +28,15 @@ contract StructuredStakingUpgradeable is
     struct StakingPool {
         uint256 poolId;
         uint256 totalStaked;
+        uint256 totalShares;
         uint256 stakingPeriodEnd;
-        uint256 cumulativeRewardPerStake;
+        uint256 rewardsAmount;
         address validationNodesProvider;
         address aggregator;
         bool finalized;
         mapping(address => uint256) stakes;
+        mapping(address => uint256) shares;
         mapping(address => uint256) earned;
-        mapping(address => uint256) accountCumulativeRewardPerStake;
     }
 
     uint256 public constant PRECISION = 10**18;
@@ -145,7 +146,7 @@ contract StructuredStakingUpgradeable is
             securitizeRegistryProxy,
             contractsRegistryProxy,
             validationNodes,
-            stakingPoolsCount // salt, it increases in time of creation of a new staking pool
+            stakingPoolsCount // Salt, it increases in time of creation of a new staking pool
         );
 
         super._setURI(stakingPoolsCount, tokenURI);
@@ -181,9 +182,7 @@ contract StructuredStakingUpgradeable is
         StakingPool storage stakingPool = stakingPools[poolId];
 
         if (stakingPool.totalStaked > 0) {
-            stakingPool.cumulativeRewardPerStake =
-                (rewardsAmount * PRECISION) /
-                stakingPool.totalStaked;
+            stakingPool.rewardsAmount = rewardsAmount;
         } else {
             // Transfer rewards back because they can't be distributed (no one staked into a pool)
             payable(_msgSender()).transfer(msg.value);
@@ -221,11 +220,14 @@ contract StructuredStakingUpgradeable is
 
         StakingPool storage stakingPool = stakingPools[poolId];
 
-        stakingPool.stakes[_msgSender()] += amount;
-        stakingPool.accountCumulativeRewardPerStake[_msgSender()] +=
-            stakingPool.stakes[_msgSender()] *
+        uint256 shares = amount *
             (stakingPool.stakingPeriodEnd - block.timestamp);
+
+        stakingPool.stakes[_msgSender()] += amount;
+        stakingPool.shares[_msgSender()] += shares;
+
         stakingPool.totalStaked += amount;
+        stakingPool.totalShares += shares;
 
         _mint(_msgSender(), poolId, amount, "");
 
@@ -245,15 +247,18 @@ contract StructuredStakingUpgradeable is
             stakingPools[poolId].finalized == true,
             "Staking: staking pool isn't finalized"
         );
+        require(
+            stakingPools[poolId].earned[_msgSender()] == 0,
+            "Staking: user already claimed rewards"
+        );
 
         StakingPool storage stakingPool = stakingPools[poolId];
 
         _burn(_msgSender(), poolId, stakingPool.stakes[_msgSender()]);
 
-        uint256 amountOwnedPerToken = stakingPool.cumulativeRewardPerStake -
-            stakingPool.accountCumulativeRewardPerStake[_msgSender()];
-        uint256 claimeableAmount = (stakingPool.stakes[_msgSender()] *
-            amountOwnedPerToken) / PRECISION;
+        uint256 claimeableAmount = (stakingPool.rewardsAmount *
+            ((stakingPool.shares[_msgSender()] * PRECISION) /
+                stakingPool.totalShares)) / PRECISION;
 
         payable(_msgSender()).transfer(
             claimeableAmount + stakingPool.stakes[_msgSender()]
@@ -328,12 +333,20 @@ contract StructuredStakingUpgradeable is
         return stakingPools[poolId].earned[user];
     }
 
-    function getAccountCumulativeRewardPerStake(uint256 poolId, address user)
+    function getUserSharesAmount(uint256 poolId, address user)
         external
         view
         returns (uint256)
     {
-        return stakingPools[poolId].accountCumulativeRewardPerStake[user];
+        return stakingPools[poolId].shares[user];
+    }
+
+    function isClaimedByUser(uint256 poolId, address user)
+        external
+        view
+        returns (bool)
+    {
+        return stakingPools[poolId].earned[user] > 0;
     }
 
     function getAvailableToStakeAmount(uint256 poolId)

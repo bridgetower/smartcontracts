@@ -16,6 +16,7 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
     address public override securitizeRegistryProxy;
 
     address public override erc1155BridgeTowerFactoryC2;
+    
 
     modifier onlyContract(address addr) {
         require(addr.isContract(), "ContractsRegistry: not contract address");
@@ -55,6 +56,11 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
         securitizeRegistryProxy = initialSecuritizeRegistryProxy;
     }
 
+    /**
+        @dev adds a new contract to the whitelist
+        @param addr new contract addrress
+    */
+
     function addContract(address addr)
         public
         override
@@ -65,6 +71,11 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
         _contractToWhitelisted[addr] = true;
     }
 
+    /**
+        @dev removes a contract from the whitelist
+        @param addr contract addrress to remove
+    */
+
     function removeContract(address addr)
         public
         override
@@ -74,6 +85,12 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
         _contractToWhitelisted[addr] = false;
     }
 
+
+    /**
+        @dev Sets the securitize registry proxy. 
+        Proxy will always point to the securitize registry        
+        @param newSecuritizeRegistryProxy Proxy address
+    */
     function setSecuritizeRegistryProxy(address newSecuritizeRegistryProxy)
         public
         override
@@ -83,6 +100,10 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
     {
         securitizeRegistryProxy = newSecuritizeRegistryProxy;
     }
+
+    /**
+        @dev Sets the ERC-1155 Bridge tower factory C2. Which is responsible for creating the ERC-1155 contracts
+    */
 
     function setERC1155BridgeTowerFactoryC2(
         address newERC1155BridgeTowerFactoryC2
@@ -96,6 +117,13 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
         erc1155BridgeTowerFactoryC2 = newERC1155BridgeTowerFactoryC2;
     }
 
+    /**
+        @dev Transfers contract registry ownership
+        
+        @param newOwner New owner
+    */
+
+
     function transferOwnership(address newOwner)
         public
         override
@@ -105,6 +133,11 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
         super.transferOwnership(newOwner);
     }
 
+    /**
+        @dev Renounces ownership. Meaning, there will be no owner.
+        Access only owner methods won't no longer be able to be called
+    */
+
     function renounceOwnership()
         public
         override
@@ -112,6 +145,11 @@ contract ContractsRegistry is IContractsRegistry, Ownable {
     {
         super.renounceOwnership();
     }
+
+     /**
+        @dev Checks if contract address is whitelisted.
+        @param addr address to check
+    */
 
     function isWhitelisted(address addr) public view override returns (bool) {
         return _contractToWhitelisted[addr];
