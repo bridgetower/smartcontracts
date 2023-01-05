@@ -39,6 +39,10 @@ abstract contract ERC1155Lockable is Initializable {
         lockPeriod = newLockPeriod;
     }
 
+    /**
+        @dev Locks an NFT for a certain lock period
+    */
+
     function lock(
         address user,
         uint256 id,
@@ -57,6 +61,12 @@ abstract contract ERC1155Lockable is Initializable {
 
         emit Locked(user, id, amount);
     }
+
+    /**
+        @dev Manually unlocks an NFT after NFT lock period has ended
+        Which means the NFT will be transferrable
+        Notice this method is also automatically called whenever the user is trying to transfer an NFT afer lock period has ended
+    */
 
     function unlock(address user, uint256 id) public virtual {
         for (
@@ -79,6 +89,11 @@ abstract contract ERC1155Lockable is Initializable {
         }
     }
 
+    /**
+        @dev Gets total NFTs locked with same ID
+    */
+
+
     function getLockedAmount(address user, uint256 id)
         public
         view
@@ -86,6 +101,10 @@ abstract contract ERC1155Lockable is Initializable {
     {
         return locksInfo[user][id].totalLockedAmount;
     }
+
+    /**
+        @dev Gets total NFTs with same ID that can be unlocked
+    */
 
     function getUnlockableAmount(address user, uint256 id)
         public
@@ -110,6 +129,10 @@ abstract contract ERC1155Lockable is Initializable {
 
         return unlockableAmount;
     }
+
+    /**
+        @dev Gets lock info such as how many NFTs with same Id are locked and the corresponding lock period
+    */
 
     function getLocksInfo(address user, uint256 id)
         public

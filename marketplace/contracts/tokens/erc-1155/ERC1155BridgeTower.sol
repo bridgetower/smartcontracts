@@ -25,6 +25,12 @@ contract ERC1155BridgeTower is
         string symbol
     );
 
+    /**
+        @dev Initialization method for the ERC1155. It can only be called once.
+        It creates a private collection, which means only owners and authorized users (minters) can call mintAndTransfer method
+        It also approve by default a list of operators to be able to transfer the contract owner's NFTs on his behalf
+    */
+
     function __ERC1155BridgeTowerUser_init(
         string memory _name,
         string memory _symbol,
@@ -57,6 +63,12 @@ contract ERC1155BridgeTower is
 
         emit CreateERC1155BridgeTowerUser(_msgSender(), _name, _symbol);
     }
+
+    /**
+        @dev Initialization method for the ERC1155. It can only be called once.
+        It creates a non private collection, which means anyone can call mintAndTransfer method
+    */
+
 
     function __ERC1155BridgeTower_init(
         string memory _name,
@@ -120,6 +132,12 @@ contract ERC1155BridgeTower is
         _setDefaultApproval(lazyTransferProxy, true);
     }
 
+    /**
+        @dev Transfers NFTs from a sender to a receiver.
+        If the sender doesn't have enough funds, the rest will be minted and transferred.
+        It also sets the royalties information and max NFT Id supply if not set
+    */
+
     function transferFromOrMint(
         LibERC1155LazyMint.Mint1155Data memory data,
         address from,
@@ -132,6 +150,12 @@ contract ERC1155BridgeTower is
 
         super._transferFromOrMint(data, from, to, amount);
     }
+
+    /**
+        @dev Mints and transfers NFTs to the receiver.
+        It also sets the royalties information and max NFT Id supply if not set
+        This function is internally called by transferFromOrMint
+    */
 
     function mintAndTransfer(
         LibERC1155LazyMint.Mint1155Data memory data,
@@ -152,6 +176,10 @@ contract ERC1155BridgeTower is
         super.mintAndTransfer(data, to, amount);
     }
 
+    /**
+        @dev Updates royalties receiver address for an NFT Id
+    */
+
     function updateAccount(
         uint256 id,
         address from,
@@ -162,11 +190,19 @@ contract ERC1155BridgeTower is
         super._updateAccount(id, from, to);
     }
 
+    /**
+        @dev Sets base URI for metadata
+    */
+
     function setBaseURI(string memory newBaseURI) external {
         onlyWhitelistedAddress(_msgSender());
 
         super._setBaseURI(newBaseURI);
     }
+
+    /**
+        @dev Approves NFTs to be transferred on belhalf of an operator
+    */
 
     function setApprovalForAll(address operator, bool approved)
         public
@@ -177,17 +213,31 @@ contract ERC1155BridgeTower is
         super.setApprovalForAll(operator, approved);
     }
 
+    /**
+        @dev Authorize an user to be able to call mintAndTransfer. Valid for private collections only
+    */
+
     function addMinter(address minter) public override {
         onlyWhitelistedAddress(_msgSender());
 
         super.addMinter(minter);
     }
 
+    /**
+        @dev Revokes minter role
+    */
+
     function removeMinter(address minter) public override {
         onlyWhitelistedAddress(_msgSender());
 
         super.removeMinter(minter);
     }
+
+    /**
+        @dev Transfers contract ownership
+        
+        @param newOwner New marketplace owner
+    */
 
     function transferOwnership(address newOwner) public override {
         onlyWhitelistedAddress(_msgSender());
@@ -196,11 +246,20 @@ contract ERC1155BridgeTower is
         super.transferOwnership(newOwner);
     }
 
+    /**
+        @dev Renounces ownership. Meaning, there will be no contract owner.
+        Access only owner methods won't no longer be able to be called
+    */
+
     function renounceOwnership() public override {
         onlyWhitelistedAddress(_msgSender());
 
         super.renounceOwnership();
     }
+
+    /**
+        @dev Transfers multiple NFts with the same IDs from a sender to a receiver
+    */
 
     function safeTransferFrom(
         address from,
@@ -216,6 +275,10 @@ contract ERC1155BridgeTower is
         super.safeTransferFrom(from, to, id, amount, data);
     }
 
+    /**
+        @dev Transfers multiple NFts with mutiple IDs from a sender to a receiver
+    */
+
     function safeBatchTransferFrom(
         address from,
         address to,
@@ -230,10 +293,21 @@ contract ERC1155BridgeTower is
         super.safeBatchTransferFrom(from, to, ids, amounts, data);
     }
 
+    /**
+        @dev Sets/Updates the NFTs lock period.
+        Lock period is applied to NFTs when they're purchased on the marketplace
+    */
+
     function setLockPeriod(uint256 newLockPeriod) external onlyOwner {
         onlyWhitelistedAddress(_msgSender());
         _setLockPeriod(newLockPeriod);   
     }
+
+    /**
+        @dev Manually unlocks an NFT after NFT lock period has ended
+        Which means the NFT will be transferrable
+        Notice this method is also automatically called whenever the user is trying to transfer an NFT afer lock period has ended
+    */
 
     function unlock(address user, uint256 id) public override(ERC1155Lockable) {
         onlyWhitelistedAddress(_msgSender());

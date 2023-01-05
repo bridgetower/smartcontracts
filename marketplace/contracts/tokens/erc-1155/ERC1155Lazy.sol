@@ -223,17 +223,17 @@ abstract contract ERC1155Lazy is
         return creators[_id];
     }
 
-    function _addMinted(uint256 tokenId, uint256 amount) internal {
-        minted[tokenId] += amount;
-    }
+    // function _addMinted(uint256 tokenId, uint256 amount) internal {
+    //     minted[tokenId] += amount;
+    // }
 
-    function _getMinted(uint256 tokenId) internal view returns (uint256) {
-        return minted[tokenId];
-    }
+    // function _getMinted(uint256 tokenId) internal view returns (uint256) {
+    //     return minted[tokenId];
+    // }
 
-    function _getSupply(uint256 tokenId) internal view returns (uint256) {
-        return supply[tokenId];
-    }
+    // function _getSupply(uint256 tokenId) internal view returns (uint256) {
+    //     return supply[tokenId];
+    // }
 
     uint256[50] private __gap;
 }
