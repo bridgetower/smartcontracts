@@ -51,7 +51,7 @@ abstract contract OrderValidator is
                 address signer;
 
                 if (signature.length == 65) {
-                    signer = _hashTypedDataV4(hash).recover(signature);
+                    signer = hash.toEthSignedMessageHash().recover(signature);
                 }
 
                 if (signer != order.maker) {
