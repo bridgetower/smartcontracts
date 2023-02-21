@@ -1,5 +1,3 @@
-import { BigNumber } from "ethers";
-
 import * as dotenv from "dotenv";
 
 import hre from "hardhat";
@@ -141,34 +139,6 @@ async function main() {
 
   console.log("\n*********************************************************\n");
 
-  // Verify ExchangeV2Proxy
-  const protocolFee: BigNumber = BigNumber.from(
-    (process.env.V_PROTOCOL_FEE || "0").trim()
-  );
-  const defaultFeeReceiver: string = (
-    process.env.V_DEFAULT_FEE_RECEIVER ||
-    (await hre.ethers.getSigners())[0].address
-  ).trim();
-
-  try {
-    await hre.run("verify:verify", {
-      address: exchangeV2Proxy,
-      constructorArguments: [
-        transferProxy,
-        erc20TransferProxy,
-        protocolFee,
-        defaultFeeReceiver,
-        royaltiesRegistry,
-        securitizeRegistryProxy,
-        contractsRegistryProxy,
-      ],
-    });
-  } catch (err: any) {
-    console.error(err.message);
-  }
-
-  console.log("\n*********************************************************\n");
-
   // Verify ExchangeV2Implementation
   try {
     await hre.run("verify:verify", {
@@ -188,22 +158,6 @@ async function main() {
     await hre.run("verify:verify", {
       address: erc1155BridgeTowerImplementation,
       constructorArguments: [],
-    });
-  } catch (err: any) {
-    console.error(err.message);
-  }
-
-  console.log("\n*********************************************************\n");
-
-  // Verify ERC1155BridgeTowerBeacon
-  try {
-    await hre.run("verify:verify", {
-      address: erc1155BridgeTowerBeacon,
-      constructorArguments: [
-        erc1155BridgeTowerImplementation,
-        securitizeRegistryProxy,
-        contractsRegistryProxy,
-      ],
     });
   } catch (err: any) {
     console.error(err.message);
