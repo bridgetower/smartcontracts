@@ -115,3 +115,7 @@ NOTE: by default, all tokens will be minted to transaction signer and he become
 an owner of a new tokens. Also, signer (minter) must be a partner. Keep in mind
 that all links for tokens' metadata is stored in the array in the
 `scripts/data/links.json`file.
+
+- Only the owner of the ERC721 can mint new tokens.
+- The owner is the deployer of the contract.
+- The ownership could be transferred if required.

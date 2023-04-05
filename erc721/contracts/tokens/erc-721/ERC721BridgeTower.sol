@@ -53,5 +53,12 @@ contract ERC721BridgeTower is ERC721Base {
         _setDefaultApproval(lazyTransferProxy, true);
     }
 
+    function mintAndTransfer(
+        LibERC721LazyMint.Mint721Data memory data,
+        address to
+    ) public virtual override onlyOwner {
+        super.mintAndTransfer(data, to);
+    }
+
     uint256[50] private __gap;
 }
