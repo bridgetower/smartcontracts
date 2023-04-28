@@ -42,11 +42,9 @@ export const getConfiguration = async () => ({
   },
   email: getEnvOrThrow("BT_MINTER_TARGET_USER_EMAIL"),
   nodeUrl: getEnvOrThrow("BT_MINTER_AVAX_NODE_URL"),
-  factoryContractAddress: getEnvOrThrow("BT_MINTER_FACTORY_CONTRACT_ADDRESS"),
   chainId: parseInt(getEnvOrThrow("BT_MINTER_AVAX_CHAIN_ID"), 10),
-  factoryContractOwnerPrivateKey: getEnvOrThrow("BT_MINTER_FACTORY_CONTRACT_OWNER_PRIVATE_KEY"),
   jwtSecret: getEnvOrThrow("BT_MINTER_JWT_SECRET"),
-  minting: {
+  marketplace: {
     apiBaseUrl: getEnvOrThrow("BT_MINTER_API_BASE_URL"),
     api: {
       endpoints: {
@@ -58,18 +56,29 @@ export const getConfiguration = async () => ({
       calls: {
         mintCollection: getEnvOrThrow("BT_MINTER_SOCKET_MINT_COLLECTION_EVENT"),
         mintNft: getEnvOrThrow("BT_MINTER_SOCKET_MINT_NFT_EVENT"),
+        setCollectionLockPeriod: getEnvOrThrow("BT_MINTER_SOCKET_SET_COLLECTION_LOCK_PERIOD")
       },
-    },
-    collection: {
-      name: getEnvOrThrow("BT_MINTER_COLLECTION_NAME"),
-      symbol: getEnvOrThrow("BT_MINTER_COLLECTION_SYMBOL"),
-      lockPeriod: getEnvOrThrow("BT_MINTER_COLLECTION_LOCK_PERIOD"),
-      abiGist: getEnvOrThrow("BT_MINTER_COLLECTION_ABI_GIST"),
-      cover: await fs.promises.readFile(getEnvOrThrow("BT_MINTER_COLLECTION_COVER_PATH")),
-      logo: await fs.promises.readFile(getEnvOrThrow("BT_MINTER_COLLECTION_LOGO_PATH")),
-      description: getEnvOrThrow("BT_MINTER_COLLECTION_DESCRIPTION"),
     }
   }
+})
+
+export const getCollectionMintingConfig = async () => ({
+  factoryContract: {
+    address: getEnvOrThrow("BT_MINTER_FACTORY_CONTRACT_ADDRESS"),
+    ownerPrivateKey: getEnvOrThrow("BT_MINTER_FACTORY_CONTRACT_OWNER_PRIVATE_KEY")
+  },
+  name: getEnvOrThrow("BT_MINTER_COLLECTION_NAME"),
+  symbol: getEnvOrThrow("BT_MINTER_COLLECTION_SYMBOL"),
+  lockPeriod: getEnvOrThrow("BT_MINTER_COLLECTION_LOCK_PERIOD"),
+  abiGist: getEnvOrThrow("BT_MINTER_COLLECTION_ABI_GIST"),
+  cover: await fs.promises.readFile(getEnvOrThrow("BT_MINTER_COLLECTION_COVER_PATH")),
+  logo: await fs.promises.readFile(getEnvOrThrow("BT_MINTER_COLLECTION_LOGO_PATH")),
+  description: getEnvOrThrow("BT_MINTER_COLLECTION_DESCRIPTION"),
+})
+
+export const getCollectionLockPeriodUpdateConfig = () => ({
+  collectionAddress: getEnvOrThrow("BT_MINTER_NFT_COLLECTION_ADDRESS"),
+  newLockPeriod: parseInt(getEnvOrThrow("BT_MINTER_NFT_COLLECTION_NEW_LOCK_PERIOD"), 10),
 })
 
 export const getRequestId = () => new Date().getTime().toString();
@@ -77,6 +86,7 @@ export const getSalt = () => new Date().getTime().toString();
 export const getLogTimestamp = () => new Date().toISOString();
 
 export const logger = {
+  debug: (arg) => console.log(`[${getLogTimestamp()}]: 🌟 ${JSON.stringify(arg)}`),
   verbose: (arg) => console.log(`[${getLogTimestamp()}]: 🌟 ${arg}`),
   success: (arg) => console.log(`[${getLogTimestamp()}]: ✨ ${arg}`),
   failure: (arg) => console.log(`[${getLogTimestamp()}]: ❌ ${arg}`),

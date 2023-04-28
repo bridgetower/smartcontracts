@@ -19,7 +19,7 @@ async function main() {
   const bearerToken = await createToken(params.jwtSecret, id);
   logger.ultraImportant(`Generated token "${bearerToken}" for identity "${id}"`)
 
-  const manager = new Manager(params.minting.apiBaseUrl, {
+  const manager = new Manager(params.marketplace.apiBaseUrl, {
     extraHeaders: {
       Authorization: `Bearer ${bearerToken}`
     },
@@ -28,7 +28,7 @@ async function main() {
 
   logger.verbose('Manager created...')
 
-  const socket = manager.socket('/' + params.minting.socket.namespace, {retries: 2});
+  const socket = manager.socket('/' + params.marketplace.socket.namespace, {retries: 2});
 
   socket.on('connect', () => logger.verbose('Created socket connection on partner utils...'))
   while(!socket.connected){
@@ -49,7 +49,7 @@ async function main() {
       royalties: nft.royalties
     })
     logger.verbose(`Minting nft with Supply: ${nft.supply}, Royalties: ${nft.royalties}, IPFS link {${nft.ipfsLink}}`)
-    const response = await socket.timeout(SOCKET_TIMEOUT).emitWithAck(params.minting.socket.calls.mintNft, request);
+    const response = await socket.timeout(SOCKET_TIMEOUT).emitWithAck(params.marketplace.socket.calls.mintNft, request);
     if(!response.tokenId) {
       logger.failure(`Failed to mint ${JSON.stringify(response)}`)
       throw new Error("Failure")

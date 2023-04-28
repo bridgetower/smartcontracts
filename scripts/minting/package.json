@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "mint:collection": "node collection.js",
-    "mint:nfts": "node nfts.js"
+    "mint:nfts": "node nfts.js",
+    "setLockPeriod": "node collection-lock-period.js"
   },
   "keywords": [],
   "author": "",

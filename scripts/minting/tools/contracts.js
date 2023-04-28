@@ -1,6 +1,7 @@
 import Web3 from "web3";
 import {ERC1155FactoryAbi} from "../abis/erc1155factory.js";
 import {logger} from "./base.js";
+import {ERC1155Abi} from "../abis/erc1155.js";
 
 export const getWeb3 = (nodeUrl) => {
   return new Web3(nodeUrl);
@@ -8,6 +9,10 @@ export const getWeb3 = (nodeUrl) => {
 
 export const getFactoryContractInstance = (web3, contractAddress) => {
   return new web3.eth.Contract(ERC1155FactoryAbi, contractAddress);
+}
+
+export const getCollectionContractInstance = (web3, contractAddress) => {
+  return new web3.eth.Contract(ERC1155Abi, contractAddress);
 }
 
 export const setAddressAsPartner = async (web3, factoryContractInstance, factoryContractAddress, ownerPrivateKey, address) => {
