@@ -67,14 +67,6 @@
 ✨ Collection 0x568Af5c3a59BE5201604E505f0563feF00713b90 locking period has been successfully changed to [260] !
 ```
 
-6. Add contract address and its ABI to the Cybavo contracts list
-7. Add this contract to avalanche delegated wallet policy allowing calls of `mintAndTransfer`/`setApprovalForAll`
-   functions
-8. Set `BT_MINTER_COLLECTION_ADDRESS` to the collection address that you'll get from `mint:collection` script
-9. Change NFT list (nfts.json) to preferred one
-10. Run `yarn mint:nfts`
-11. Done!
-
 # Environment variables
 
 | Should be changed | Environment variable                                                                          | Default value / Example                                                                    | Purpose                                                                                                                                                                                        |
