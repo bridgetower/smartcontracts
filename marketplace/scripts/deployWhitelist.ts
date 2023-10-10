@@ -12,7 +12,7 @@ dotenv.config();
 
 function getEnvOrThrow(name: string): string | never {
   const param = process.env[name];
-  if (!param) throw new Error("Beda");
+  if (!param) throw new Error(`Environment variable ${name} is required but it is empty or missing`);
 
   return param;
 }
