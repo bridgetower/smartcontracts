@@ -32,23 +32,10 @@ async function main() {
     console.error(err);
   }
 
-  // Verify ERC721BridgeTowerProxy
-  const name: string = process.env.TOKEN_NAME || "";
-  const symbol: string = process.env.TOKEN_SYMBOL || "";
-  const baseURI: string = "";
-  const contractURI: string = "";
-
   try {
     await hre.run("verify:verify", {
       address: erc721BridgeTowerProxy,
-      constructorArguments: [
-        name,
-        symbol,
-        baseURI,
-        contractURI,
-        transferProxy,
-        lazyTransferProxy,
-      ],
+      constructorArguments: [],
     });
   } catch (err: any) {
     console.error(err);

@@ -43,12 +43,14 @@ const config: HardhatUserConfig = {
       accounts: [process.env.PRIVATE_KEY || ""],
       gas: 5000000,
       chainId: 5,
+      gasPrice: 30000000000,
     },
     mainnet: {
       url: `https://mainnet.infura.io/v3/${process.env.INFURA_PROJECT_ID}`,
       accounts: [process.env.PRIVATE_KEY || ""],
       gas: 5000000,
       chainId: 1,
+      gasPrice: 100000000000,
     },
   },
   gasReporter: {

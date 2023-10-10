@@ -1,4 +1,4 @@
-.openzeppelin/
+openzeppelin/
 node_modules/
 artifacts/
 typechain/
