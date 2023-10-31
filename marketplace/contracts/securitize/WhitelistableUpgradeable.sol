@@ -59,8 +59,6 @@ abstract contract WhitelistableUpgradeable is OwnableUpgradeable {
         onlyOwner
         onlyContract(newSecuritizeRegistryProxy)
     {
-        onlyWhitelistedAddress(_msgSender());
-
         securitizeRegistryProxy = newSecuritizeRegistryProxy;
     }
 
