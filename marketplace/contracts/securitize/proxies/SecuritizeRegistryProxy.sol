@@ -53,7 +53,6 @@ contract SecuritizeRegistryProxy is ISecuritizeRegistryProxy, Ownable, AccessCon
     function setSecuritizeRegistry(address newSecuritizeRegistry)
         public
         override
-        onlyWhitelistedWallet(_msgSender())
         onlyAdmin
         onlyContract(newSecuritizeRegistry)
     {
