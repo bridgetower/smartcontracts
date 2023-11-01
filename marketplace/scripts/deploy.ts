@@ -1,6 +1,6 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
 
-import hre, { ethers, upgrades } from "hardhat";
+import hre, {ethers, upgrades} from "hardhat";
 
 import * as dotenv from "dotenv";
 
@@ -15,49 +15,50 @@ dotenv.config();
 
 async function main() {
   const signers: SignerWithAddress[] = await ethers.getSigners();
+  const partners: string[] = process.env.D_PARTNERS
+    ? process.env.D_PARTNERS.split(",").map((partner) => partner.trim())
+    : [];
+  const initialWhitelist: string[] = process.env.D_INITIAL_WHITELIST
+    ? process.env.D_INITIAL_WHITELIST.split(",").map((addr) => addr.trim())
+    : [];
   let tx: ContractTransaction;
 
-  /**
-   * SecuritizeRegistry
-   */
-  let securitizeRegistryAddress: string = "";
+  const SecuritizeRegistry: ContractFactory = await ethers.getContractFactory(
+    "Whitelist"
+  );
+  const securitizeRegistry: Contract = await SecuritizeRegistry.deploy();
 
-  switch ((process.env.ENV || "DEV").trim()) {
-    case "DEV":
-      securitizeRegistryAddress = (
-        process.env.SECURITIZE_REGISTRY_DEV || ""
-      ).trim();
-      break;
-    case "STAGING":
-      securitizeRegistryAddress = (
-        process.env.SECURITIZE_REGISTRY_STAGING || ""
-      ).trim();
-      break;
-    case "PROD":
-      securitizeRegistryAddress = (
-        process.env.SECURITIZE_REGISTRY_PROD || ""
-      ).trim();
-      break;
-    default:
-      break;
-  }
+  await securitizeRegistry.deployed();
 
-  if ((process.env.HARDHAT_NETWORK || "localhost").trim() === "localhost") {
-    const SecuritizeRegistry: ContractFactory = await ethers.getContractFactory(
-      "SecuritizeRegistry"
-    );
-    const securitizeRegistry: Contract = await SecuritizeRegistry.deploy();
-
-    await securitizeRegistry.deployed();
-
-    securitizeRegistryAddress = securitizeRegistry.address;
-
-    tx = await securitizeRegistry.addWallet(signers[0].address);
-
-    await tx.wait();
-  }
+  const securitizeRegistryAddress = securitizeRegistry.address;
 
   console.log("SecuritizeRegistry: ", securitizeRegistryAddress);
+
+  tx = await securitizeRegistry.addWalletFromOwner(signers[0].address);
+
+  await tx.wait();
+
+  console.log(`SecuritizeRegistry: ${securitizeRegistryAddress} whitelisted: ${signers[0].address} (owner)`);
+
+  for (let i: number = 0; i < partners.length; ++i) {
+    tx = await securitizeRegistry.addWalletFromOwner(partners[i]);
+
+    await tx.wait();
+
+    console.log(
+      `SecuritizeRegistry: ${securitizeRegistryAddress} whitelisted: ${partners[i]} (partner)`
+    );
+  }
+
+  for (let i: number = 0; i < initialWhitelist.length; ++i) {
+    tx = await securitizeRegistry.addWalletFromOwner(initialWhitelist[i]);
+
+    await tx.wait();
+
+    console.log(
+      `SecuritizeRegistry: ${securitizeRegistryAddress} whitelisted: ${initialWhitelist[i]} (initial whitelist)`
+    );
+  }
 
   /**
    * SecuritizeRegistryProxy
@@ -277,10 +278,6 @@ async function main() {
   /**
    * Add partners
    */
-  const partners: string[] = process.env.D_PARTNERS
-    ? process.env.D_PARTNERS.split(",").map((partner) => partner.trim())
-    : [];
-
   for (let i: number = 0; i < partners.length; ++i) {
     tx = await erc1155BridgeTowerFactoryC2.addPartner(partners[i]);
 

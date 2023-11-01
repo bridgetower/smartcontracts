@@ -5,24 +5,9 @@ import hre from "hardhat";
 dotenv.config();
 
 async function main() {
-  let securitizeRegistry: string = "";
-
-  switch ((process.env.ENV || "DEV").trim()) {
-    case "DEV":
-      securitizeRegistry = (process.env.SECURITIZE_REGISTRY_DEV || "").trim();
-      break;
-    case "STAGING":
-      securitizeRegistry = (
-        process.env.SECURITIZE_REGISTRY_STAGING || ""
-      ).trim();
-      break;
-    case "PROD":
-      securitizeRegistry = (process.env.SECURITIZE_REGISTRY_PROD || "").trim();
-      break;
-    default:
-      break;
-  }
-
+  const securitizeRegistry: string = (
+    process.env.V_SECURITIZE_REGISTRY || ""
+  ).trim();
   const securitizeRegistryProxy: string = (
     process.env.V_SECURITIZE_REGISTRY_PROXY || ""
   ).trim();
@@ -55,6 +40,20 @@ async function main() {
     process.env.V_ERC1155_BRIDGE_TOWER_FACTORY_C2 || ""
   ).trim();
 
+  console.log(`Verifying SecuritizeRegistry (aka Whitelist): ${securitizeRegistry}`);
+  // Verify SecuritizeRegistry (aka whitelist)
+  try {
+    await hre.run("verify:verify", {
+      address: securitizeRegistry,
+      constructorArguments: [],
+    });
+  } catch (err: any) {
+    console.error(err.message);
+  }
+
+  console.log("\n*********************************************************\n");
+
+  console.log(`Verifying SecuritizeRegistryProxy: ${securitizeRegistryProxy}`);
   // Verify SecuritizeRegistryProxy
   try {
     await hre.run("verify:verify", {
@@ -67,6 +66,7 @@ async function main() {
 
   console.log("\n*********************************************************\n");
 
+  console.log(`Verifying ContractsRegistry: ${contractsRegistry}`);
   // Verify ContractsRegistry
   try {
     await hre.run("verify:verify", {
@@ -79,6 +79,7 @@ async function main() {
 
   console.log("\n*********************************************************\n");
 
+  console.log(`Verifying ContractsRegistryProxy: ${contractsRegistryProxy}`);
   // Verify ContractsRegistryProxy
   try {
     await hre.run("verify:verify", {
@@ -91,6 +92,7 @@ async function main() {
 
   console.log("\n*********************************************************\n");
 
+  console.log(`Verifying TransferProxy: ${transferProxy}`);
   // Verify TransferProxy
   try {
     await hre.run("verify:verify", {
@@ -103,6 +105,7 @@ async function main() {
 
   console.log("\n*********************************************************\n");
 
+  console.log(`Verifying ERC20TransferProxy: ${erc20TransferProxy}`);
   // Verify ERC20TransferProxy
   try {
     await hre.run("verify:verify", {
@@ -115,6 +118,7 @@ async function main() {
 
   console.log("\n*********************************************************\n");
 
+  console.log(`Verifying ERC1155LazyMintTransferProxy: ${lazyTransferProxy}`);
   // Verify ERC1155LazyMintTransferProxy
   try {
     await hre.run("verify:verify", {
@@ -127,6 +131,7 @@ async function main() {
 
   console.log("\n*********************************************************\n");
 
+  console.log(`Verifying RoyaltiesRegistry: ${royaltiesRegistry}`);
   // Verify RoyaltiesRegistry
   try {
     await hre.run("verify:verify", {
@@ -139,6 +144,7 @@ async function main() {
 
   console.log("\n*********************************************************\n");
 
+  console.log(`Verifying impl of ExchangeV2Proxy: ${exchangeV2Proxy}`);
   // Verify ExchangeV2Implementation
   try {
     await hre.run("verify:verify", {
@@ -153,6 +159,7 @@ async function main() {
 
   console.log("\n*********************************************************\n");
 
+  console.log(`Verifying ERC1155BridgeTowerImplementation: ${erc1155BridgeTowerImplementation}`);
   // Verify ERC1155BridgeTowerImplementation
   try {
     await hre.run("verify:verify", {
@@ -165,6 +172,7 @@ async function main() {
 
   console.log("\n*********************************************************\n");
 
+  console.log(`Verifying ERC1155BridgeTowerFactoryC2: ${erc1155BridgeTowerFactoryC2}`);
   // Verify ERC1155BridgeTowerFactoryC2
   try {
     await hre.run("verify:verify", {
