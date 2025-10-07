@@ -22,7 +22,7 @@
     "coverage": "npx hardhat coverage",
     "docgen": "npx hardhat docgen",
     "size": "npx hardhat size-contracts --no-compile",
-    "test": "npx hardhat test --bail"
+    "test": "npx hardhat test"
   },
   "dependencies": {
     "@ethersproject/keccak256": "^5.6.1",
